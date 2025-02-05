@@ -30,63 +30,63 @@
 
 %%
 
-Program:
-    DeclList
+Programa:
+    DeclLista
 ;
 
-DeclList:
-    Decl DeclList
+DeclLista:
+    Decl DeclLista
     | /* epsilon */
 ;
 
 Decl:
-    TypeEspec ID PEV 
+    TipoEspec ID PEV 
     | FunDecl
 ;
 
-TypeEspec:
+TipoEspec:
     INT
     | VOID
 ;
 
 FunDecl:
-    TypeEspec ID APA Params FPA CompoundDecl
+    TipoEspec ID APA Params FPA CompostoDecl
 ;
 
 Params:
-    ParamList
+    ParamLista
     | VOID
 ;
 
-ParamList:
-    Param VIR ParamList
+ParamLista:
+    Param VIR ParamLista
     | Param
 ;
 
 Param:
-    TypeEspec ID
-    | TypeEspec ID ACO FCO
+    TipoEspec ID
+    | TipoEspec ID ACO FCO
 ;
 
-CompoundDecl:
-    ACH LocalDecl CommandList FCH
+CompostoDecl:
+    ACH LocalDecl ComandoLista FCH
 ;
 
 LocalDecl:
-    DeclList
+    DeclLista
 ;
 
-CommandList:
-    Command CommandList
+ComandoLista:
+    Comando ComandoLista
     | /* epsilon */
 ;
 
-Command:
+Comando:
     ExpDecl
-    | CompoundDecl
-    | SelectionDecl
-    | IterationDecl
-    | ReturnDecl
+    | CompostoDecl
+    | SelecaoDecl
+    | IteracaoDecl
+    | RetornoDecl
 ;
 
 ExpDecl:
@@ -94,23 +94,23 @@ ExpDecl:
     | PEV
 ;
 
-SelectionDecl:
-    IF APA Exp FPA Command ELSE Command
-    | IF APA Exp FPA Command
+SelecaoDecl:
+    IF APA Exp FPA Comando ELSE Comando
+    | IF APA Exp FPA Comando
 ;
 
-IterationDecl:
-    WHILE APA Exp FPA Command
+IteracaoDecl:
+    WHILE APA Exp FPA Comando
 ;
 
-ReturnDecl:
+RetornoDecl:
     RETURN PEV
     | RETURN Exp PEV
 ;
 
 Exp:
     Var ATR Exp
-    | SimpleExp
+    | SimplesExp
 ;
 
 Var:
@@ -118,33 +118,33 @@ Var:
     | ID ACO Exp FCO
 ;
 
-SimpleExp:
-    SumExp Relational SimpleExp
-    | SumExp
+SimplesExp:
+    SomaExp Relacional SomaExp
+    | SomaExp
 ;
 
-Relational:
+Relacional:
     MEN
+    | MMI
     | MIG
     | MAI
-    | MMI
     | IGU
     | DIF
 ;
 
-SumExp:
-    SumExp Sum Term
-    | Term
+SomaExp:
+    SomaExp Soma Termo
+    | Termo
 ;
 
-Sum:
+Soma:
     SOM
     | SUB
 ;
 
-Term:
-    Term Mult Factor
-    | Factor
+Termo:
+    Termo Mult Fator
+    | Fator
 ;
 
 Mult:
@@ -152,19 +152,19 @@ Mult:
     | DIV
 ;
 
-Factor:
+Fator:
     APA Exp FPA
     | Var
-    | FunCall
+    | Ativacao
     | NUM
 ;
 
-FunCall:
-    ID APA ArgList FPA
+Ativacao:
+    ID APA ArgLista FPA
 ;
 
-ArgList:
-    ArgList VIR Exp
+ArgLista:
+    ArgLista VIR Exp
     | Exp
     | /* epsilon */
 ;
