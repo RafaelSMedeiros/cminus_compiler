@@ -92,10 +92,11 @@
     #define YYSTYPE TreeNode *
     static TreeNode * arvoreSintatica; /* Armazena a árvore sintática */
 
+    // Declaração da função antes do uso
+    TreeNode * newNode();
 
 
-
-#line 99 "parser.tab.c"
+#line 100 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -569,12 +570,12 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    38,    38,    42,    52,    56,    57,    61,    62,    66,
-      72,    73,    77,    78,    82,    83,    87,    91,    95,    96,
-     100,   101,   102,   103,   104,   108,   109,   113,   114,   118,
-     122,   123,   127,   128,   132,   133,   137,   138,   142,   143,
-     144,   145,   146,   147,   151,   152,   156,   157,   161,   162,
-     166,   167,   171,   172,   173,   174,   178,   182,   183,   184
+       0,    39,    39,    43,    46,    50,    57,    61,    65,    72,
+      83,    84,    88,    89,    93,    94,    98,   102,   106,   107,
+     111,   112,   113,   114,   115,   119,   120,   124,   125,   129,
+     133,   134,   138,   139,   143,   144,   148,   149,   153,   154,
+     155,   156,   157,   158,   162,   163,   167,   168,   172,   173,
+     177,   178,   182,   183,   184,   185,   189,   193,   194,   195
 };
 #endif
 
@@ -1195,144 +1196,172 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Programa: DeclLista  */
-#line 38 "parser.y"
+#line 39 "parser.y"
               { arvoreSintatica = yyvsp[0]; }
-#line 1201 "parser.tab.c"
+#line 1202 "parser.tab.c"
     break;
 
   case 3: /* DeclLista: Decl DeclLista  */
-#line 42 "parser.y"
+#line 43 "parser.y"
                    { 
-        YYSTYPE t = yyvsp[-1];
-            if (t != NULL){
-                while (t->sibling != NULL)
-                    t = t->sibling;
-                t->sibling = yyvsp[0];
-                yyval = yyvsp[-1];
-              }
-            else yyval = yyvsp[0];
+            yyval = yyvsp[-1];
         }
-#line 1216 "parser.tab.c"
+#line 1210 "parser.tab.c"
     break;
 
   case 4: /* DeclLista: %empty  */
-#line 52 "parser.y"
+#line 46 "parser.y"
                     { yyval = NULL; }
-#line 1222 "parser.tab.c"
+#line 1216 "parser.tab.c"
+    break;
+
+  case 5: /* Decl: TipoEspec ID PEV  */
+#line 50 "parser.y"
+                     { 
+        yyval = newNode();
+        yyval->value = strdup("ID"); // Corrigindo atribuição de string constante
+        yyval->child[0] = yyvsp[-2];
+        yyval->child[1] = newNode();
+        yyval->child[1]->value = strdup("PEV"); // Corrigindo atribuição de string constante
+    }
+#line 1228 "parser.tab.c"
     break;
 
   case 6: /* Decl: FunDecl  */
 #line 57 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1228 "parser.tab.c"
+#line 1234 "parser.tab.c"
+    break;
+
+  case 7: /* TipoEspec: INT  */
+#line 61 "parser.y"
+        {
+        yyval = newNode();
+        yyval->value = strdup("INT");
+    }
+#line 1243 "parser.tab.c"
+    break;
+
+  case 8: /* TipoEspec: VOID  */
+#line 65 "parser.y"
+           {
+        yyval = newNode();
+        yyval->value = strdup("VOID");
+    }
+#line 1252 "parser.tab.c"
     break;
 
   case 9: /* FunDecl: TipoEspec ID APA Params FPA CompostoDecl  */
-#line 66 "parser.y"
+#line 72 "parser.y"
                                              {
-        
+        yyval = yyvsp[-5];
+        yyvsp[-5]->child[0] = newNode();
+        yyvsp[-5]->child[0]->value = strdup("ID");
+        yyvsp[-5]->sibling = newNode();
+        yyvsp[-5]->sibling = newNode();
+        yyvsp[-5]->sibling->value = strdup("APA");
     }
-#line 1236 "parser.tab.c"
+#line 1265 "parser.tab.c"
     break;
 
   case 10: /* Params: ParamLista  */
-#line 72 "parser.y"
+#line 83 "parser.y"
                { yyval = yyvsp[0]; }
-#line 1242 "parser.tab.c"
+#line 1271 "parser.tab.c"
     break;
 
   case 17: /* LocalDecl: DeclLista  */
-#line 91 "parser.y"
+#line 102 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1248 "parser.tab.c"
+#line 1277 "parser.tab.c"
     break;
 
   case 19: /* ComandoLista: %empty  */
-#line 96 "parser.y"
+#line 107 "parser.y"
                     { yyval = NULL; }
-#line 1254 "parser.tab.c"
+#line 1283 "parser.tab.c"
     break;
 
   case 20: /* Comando: ExpDecl  */
-#line 100 "parser.y"
+#line 111 "parser.y"
             { yyval = yyvsp[0]; }
-#line 1260 "parser.tab.c"
+#line 1289 "parser.tab.c"
     break;
 
   case 21: /* Comando: CompostoDecl  */
-#line 101 "parser.y"
+#line 112 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1266 "parser.tab.c"
+#line 1295 "parser.tab.c"
     break;
 
   case 22: /* Comando: SelecaoDecl  */
-#line 102 "parser.y"
+#line 113 "parser.y"
                   { yyval = yyvsp[0]; }
-#line 1272 "parser.tab.c"
+#line 1301 "parser.tab.c"
     break;
 
   case 23: /* Comando: IteracaoDecl  */
-#line 103 "parser.y"
+#line 114 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1278 "parser.tab.c"
+#line 1307 "parser.tab.c"
     break;
 
   case 24: /* Comando: RetornoDecl  */
-#line 104 "parser.y"
+#line 115 "parser.y"
                   { yyval = yyvsp[0]; }
-#line 1284 "parser.tab.c"
+#line 1313 "parser.tab.c"
     break;
 
   case 33: /* Exp: SimplesExp  */
-#line 128 "parser.y"
+#line 139 "parser.y"
                  { yyval = yyvsp[0]; }
-#line 1290 "parser.tab.c"
+#line 1319 "parser.tab.c"
     break;
 
   case 37: /* SimplesExp: SomaExp  */
-#line 138 "parser.y"
+#line 149 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1296 "parser.tab.c"
+#line 1325 "parser.tab.c"
     break;
 
   case 45: /* SomaExp: Termo  */
-#line 152 "parser.y"
+#line 163 "parser.y"
             { yyval = yyvsp[0]; }
-#line 1302 "parser.tab.c"
+#line 1331 "parser.tab.c"
     break;
 
   case 49: /* Termo: Fator  */
-#line 162 "parser.y"
+#line 173 "parser.y"
             { yyval = yyvsp[0]; }
-#line 1308 "parser.tab.c"
+#line 1337 "parser.tab.c"
     break;
 
   case 53: /* Fator: Var  */
-#line 172 "parser.y"
+#line 183 "parser.y"
           { yyval = yyvsp[0]; }
-#line 1314 "parser.tab.c"
+#line 1343 "parser.tab.c"
     break;
 
   case 54: /* Fator: Ativacao  */
-#line 173 "parser.y"
+#line 184 "parser.y"
                { yyval = yyvsp[0]; }
-#line 1320 "parser.tab.c"
+#line 1349 "parser.tab.c"
     break;
 
   case 58: /* ArgLista: Exp  */
-#line 183 "parser.y"
+#line 194 "parser.y"
           { yyval = yyvsp[0]; }
-#line 1326 "parser.tab.c"
+#line 1355 "parser.tab.c"
     break;
 
   case 59: /* ArgLista: %empty  */
-#line 184 "parser.y"
+#line 195 "parser.y"
                     { yyval = NULL; }
-#line 1332 "parser.tab.c"
+#line 1361 "parser.tab.c"
     break;
 
 
-#line 1336 "parser.tab.c"
+#line 1365 "parser.tab.c"
 
       default: break;
     }
@@ -1525,7 +1554,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 187 "parser.y"
+#line 198 "parser.y"
 
 
 // Função para tratamento de erros
@@ -1534,9 +1563,13 @@ void yyerror(const char *s) {
 }
 
 void printTree(TreeNode *tree, int level) {
+    printf("entrou");
     if (tree == NULL) {
+        printf("ta vazia");
         return;
     }
+
+    printf("'nao ta vazia'\n\n");
     
     // Imprime a indentação correspondente ao nível da árvore
     for (int i = 0; i < level; i++) {
@@ -1581,10 +1614,28 @@ int main(int argc, char *argv[]) {
     // Verifica o resultado da análise
     if (parse_result == 0) {
         printf("Análise sintática bem-sucedida! A sintaxe está correta.\n");
+
         printTree(arvoreSintatica, 0);
     } else {
         printf("Erro na análise sintática.\n");
     }
 
     return 0;
+}
+
+TreeNode * newNode() {
+    TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+    int i;
+    if (t == NULL) {
+        printf("Out of memory error\n");
+    } else {
+        printf("criou");
+        for (i = 0; i < MAXCHILDREN; i++) 
+            t->child[i] = NULL;
+        t->sibling = NULL;
+        t->type = NULL;
+        t->value = NULL;
+    }
+
+    return t;
 }

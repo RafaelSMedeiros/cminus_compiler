@@ -22,7 +22,8 @@
     #define YYSTYPE TreeNode *
     static TreeNode * arvoreSintatica; /* Armazena a árvore sintática */
 
-
+    // Declaração da função antes do uso
+    TreeNode * newNode();
 
 %}
 
@@ -40,31 +41,41 @@ Programa:
 
 DeclLista:
     Decl DeclLista { 
-        YYSTYPE t = $1;
-            if (t != NULL){
-                while (t->sibling != NULL)
-                    t = t->sibling;
-                t->sibling = $2;
-                $$ = $1;
-              }
-            else $$ = $2;
+            $$ = $1;
         }
     | /* epsilon */ { $$ = NULL; }
 ;
 
 Decl:
-    TipoEspec ID PEV 
+    TipoEspec ID PEV { 
+        $$ = newNode();
+        $$->value = strdup("ID"); // Corrigindo atribuição de string constante
+        $$->child[0] = $1;
+        $$->child[1] = newNode();
+        $$->child[1]->value = strdup("PEV"); // Corrigindo atribuição de string constante
+    }
     | FunDecl { $$ = $1; }
 ;
 
 TipoEspec:
-    INT
-    | VOID
+    INT {
+        $$ = newNode();
+        $$->value = strdup("INT");
+    }
+    | VOID {
+        $$ = newNode();
+        $$->value = strdup("VOID");
+    }
 ;
 
 FunDecl:
     TipoEspec ID APA Params FPA CompostoDecl {
-        
+        $$ = $1;
+        $1->child[0] = newNode();
+        $1->child[0]->value = strdup("ID");
+        $1->sibling = newNode();
+        $1->sibling = newNode();
+        $1->sibling->value = strdup("APA");
     }
 ;
 
@@ -192,9 +203,13 @@ void yyerror(const char *s) {
 }
 
 void printTree(TreeNode *tree, int level) {
+    printf("entrou");
     if (tree == NULL) {
+        printf("ta vazia");
         return;
     }
+
+    printf("'nao ta vazia'\n\n");
     
     // Imprime a indentação correspondente ao nível da árvore
     for (int i = 0; i < level; i++) {
@@ -239,10 +254,28 @@ int main(int argc, char *argv[]) {
     // Verifica o resultado da análise
     if (parse_result == 0) {
         printf("Análise sintática bem-sucedida! A sintaxe está correta.\n");
+
         printTree(arvoreSintatica, 0);
     } else {
         printf("Erro na análise sintática.\n");
     }
 
     return 0;
+}
+
+TreeNode * newNode() {
+    TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+    int i;
+    if (t == NULL) {
+        printf("Out of memory error\n");
+    } else {
+        printf("criou");
+        for (i = 0; i < MAXCHILDREN; i++) 
+            t->child[i] = NULL;
+        t->sibling = NULL;
+        t->type = NULL;
+        t->value = NULL;
+    }
+
+    return t;
 }
