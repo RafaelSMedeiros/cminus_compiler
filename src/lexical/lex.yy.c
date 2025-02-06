@@ -927,12 +927,12 @@ YY_RULE_SETUP
 case 26:
 YY_RULE_SETUP
 #line 46 "scanner.l"
-{ yylval.str = strdup(yytext); return NUM; }
+{ return NUM; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 47 "scanner.l"
-{ yylval.str = strdup(yytext); return ID; }
+{ return ID; }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */

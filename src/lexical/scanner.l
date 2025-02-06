@@ -43,8 +43,8 @@ ID [a-zA-Z][a-zA-Z0-9]*
 "{" { return ACH; }
 "}" { return FCH; }
 
-{NUM} { yylval.str = strdup(yytext); return NUM; }
-{ID}  { yylval.str = strdup(yytext); return ID; }
+{NUM} { return NUM; }
+{ID}  { return ID; }
 
 [ \t\n]+ ;  // Ignorar espaços, tabs e quebras de linha
 

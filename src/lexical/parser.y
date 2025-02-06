@@ -19,15 +19,14 @@
         char *value;                         
     } TreeNode;
 
+    #define YYSTYPE TreeNode *
     static TreeNode * arvoreSintatica; /* Armazena a árvore sintática */
+
+
 
 %}
 
-%union {
-    char *str; 
-}
-
-%token <str> NUM ID
+%token NUM ID
 %token ELSE IF INT RETURN VOID WHILE
 %token SOM SUB MUL DIV MEN MMI MIG MAI IGU DIF ATR
 %token PEV VIR APA FPA ACO FCO ACH FCH
@@ -36,17 +35,26 @@
 %%
 
 Programa:
-    DeclLista { arvoreSintatica = $1 }
+    DeclLista { arvoreSintatica = $1; }
 ;
 
 DeclLista:
-    Decl DeclLista
-    | /* epsilon */
+    Decl DeclLista { 
+        YYSTYPE t = $1;
+            if (t != NULL){
+                while (t->sibling != NULL)
+                    t = t->sibling;
+                t->sibling = $2;
+                $$ = $1;
+              }
+            else $$ = $2;
+        }
+    | /* epsilon */ { $$ = NULL; }
 ;
 
 Decl:
     TipoEspec ID PEV 
-    | FunDecl
+    | FunDecl { $$ = $1; }
 ;
 
 TipoEspec:
@@ -55,11 +63,13 @@ TipoEspec:
 ;
 
 FunDecl:
-    TipoEspec ID APA Params FPA CompostoDecl
+    TipoEspec ID APA Params FPA CompostoDecl {
+        
+    }
 ;
 
 Params:
-    ParamLista
+    ParamLista { $$ = $1; }
     | VOID
 ;
 
@@ -78,20 +88,20 @@ CompostoDecl:
 ;
 
 LocalDecl:
-    DeclLista
+    DeclLista { $$ = $1; }
 ;
 
 ComandoLista:
     Comando ComandoLista
-    | /* epsilon */
+    | /* epsilon */ { $$ = NULL; }
 ;
 
 Comando:
-    ExpDecl
-    | CompostoDecl
-    | SelecaoDecl
-    | IteracaoDecl
-    | RetornoDecl
+    ExpDecl { $$ = $1; }
+    | CompostoDecl { $$ = $1; }
+    | SelecaoDecl { $$ = $1; }
+    | IteracaoDecl { $$ = $1; }
+    | RetornoDecl { $$ = $1; }
 ;
 
 ExpDecl:
@@ -115,7 +125,7 @@ RetornoDecl:
 
 Exp:
     Var ATR Exp
-    | SimplesExp
+    | SimplesExp { $$ = $1; }
 ;
 
 Var:
@@ -125,7 +135,7 @@ Var:
 
 SimplesExp:
     SomaExp Relacional SomaExp
-    | SomaExp
+    | SomaExp { $$ = $1; }
 ;
 
 Relacional:
@@ -139,7 +149,7 @@ Relacional:
 
 SomaExp:
     SomaExp Soma Termo
-    | Termo
+    | Termo { $$ = $1; }
 ;
 
 Soma:
@@ -149,7 +159,7 @@ Soma:
 
 Termo:
     Termo Mult Fator
-    | Fator
+    | Fator { $$ = $1; }
 ;
 
 Mult:
@@ -159,8 +169,8 @@ Mult:
 
 Fator:
     APA Exp FPA
-    | Var
-    | Ativacao
+    | Var { $$ = $1; }
+    | Ativacao { $$ = $1; }
     | NUM
 ;
 
@@ -170,8 +180,8 @@ Ativacao:
 
 ArgLista:
     ArgLista VIR Exp
-    | Exp
-    | /* epsilon */
+    | Exp { $$ = $1; }
+    | /* epsilon */ { $$ = NULL; }
 ;
 
 %%
@@ -229,7 +239,7 @@ int main(int argc, char *argv[]) {
     // Verifica o resultado da análise
     if (parse_result == 0) {
         printf("Análise sintática bem-sucedida! A sintaxe está correta.\n");
-        printTree(arvoreSintatica, 0)
+        printTree(arvoreSintatica, 0);
     } else {
         printf("Erro na análise sintática.\n");
     }
