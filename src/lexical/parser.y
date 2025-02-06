@@ -4,23 +4,27 @@
     #include <string.h>
 
     extern int yylex();
-    extern int yylineno; // Adicionando a declaração de yylineno
-    extern char *yytext; // Adicionando a declaração de yytext
+    extern int yylineno; 
+    extern char *yytext; 
     void yyerror(const char *s);
-
-    // Declarando yyin para que seja reconhecido
     extern FILE *yyin;
 
-    typedef struct {
-        char *str;
-    } YYSTYPE;
+    #define MAXCHILDREN 3 
 
-    #define YYSTYPE YYSTYPE
+    typedef struct TreeNode {
+        struct TreeNode *child[MAXCHILDREN];
+        struct TreeNode *sibling;           
+        int lineno;                          
+        char *type;                          
+        char *value;                         
+    } TreeNode;
+
+    static TreeNode * arvoreSintatica; /* Armazena a árvore sintática */
+
 %}
 
-
 %union {
-    char *str; // Para tokens como ID e NUM
+    char *str; 
 }
 
 %token <str> NUM ID
@@ -28,10 +32,11 @@
 %token SOM SUB MUL DIV MEN MMI MIG MAI IGU DIF ATR
 %token PEV VIR APA FPA ACO FCO ACH FCH
 
+
 %%
 
 Programa:
-    DeclLista
+    DeclLista { arvoreSintatica = $1 }
 ;
 
 DeclLista:
@@ -176,6 +181,32 @@ void yyerror(const char *s) {
     fprintf(stderr, "ERRO SINTÁTICO: '%s' LINHA: %d\n", yytext, yylineno);
 }
 
+void printTree(TreeNode *tree, int level) {
+    if (tree == NULL) {
+        return;
+    }
+    
+    // Imprime a indentação correspondente ao nível da árvore
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+    
+    // Imprime o tipo do nó e, se houver, seu valor
+    if (tree->value) {
+        printf("%s: %s (Linha: %d)\n", tree->type, tree->value, tree->lineno);
+    } else {
+        printf("%s (Linha: %d)\n", tree->type, tree->lineno);
+    }
+    
+    // Chama recursivamente para os filhos
+    for (int i = 0; i < MAXCHILDREN; i++) {
+        printTree(tree->child[i], level + 1);
+    }
+    
+    // Chama recursivamente para os irmãos
+    printTree(tree->sibling, level);
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Uso: %s <arquivo>\n", argv[0]);
@@ -198,6 +229,7 @@ int main(int argc, char *argv[]) {
     // Verifica o resultado da análise
     if (parse_result == 0) {
         printf("Análise sintática bem-sucedida! A sintaxe está correta.\n");
+        printTree(arvoreSintatica, 0)
     } else {
         printf("Erro na análise sintática.\n");
     }
