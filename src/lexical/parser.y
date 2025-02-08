@@ -67,6 +67,7 @@ TipoEspec:
 
 FunDecl:
     TipoEspec ID APA Params FPA CompostoDecl {
+        printf("aqui: %s\n", yytext);
         $$ = newExpNode(FunDeclK);
         $$->kind.exp = FunDeclK;
         $$->attr.name = copyString(yytext);

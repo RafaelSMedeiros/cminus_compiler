@@ -1,10 +1,10 @@
 %{
     #include "parser.tab.h"
-    #include <string>
-    #include <iostream>
-    #include <cstring> // Para strdup
+    #include "globals.h"
+    #include "util.h"
 
-    using namespace std;
+    #define MAXTOKENLEN 40
+    char tokenString[MAXTOKENLEN+1];
 
     extern YYSTYPE yylval;  // Garantir que o Bison use YYSTYPE
 %}
