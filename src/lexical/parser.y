@@ -1,7 +1,11 @@
 %{
+    #define YYPARSER /* distinguishes Yacc output from other code files */
+
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include "globals.h"
+    #include "util.h"
 
     extern int yylex();
     extern int yylineno; 
@@ -9,21 +13,8 @@
     void yyerror(const char *s);
     extern FILE *yyin;
 
-    #define MAXCHILDREN 3 
-
-    typedef struct TreeNode {
-        struct TreeNode *child[MAXCHILDREN];
-        struct TreeNode *sibling;           
-        int lineno;                          
-        char *type;                          
-        char *value;                         
-    } TreeNode;
-
     #define YYSTYPE TreeNode *
     static TreeNode * arvoreSintatica; /* Armazena a árvore sintática */
-
-    // Declaração da função antes do uso
-    TreeNode * newNode();
 
 %}
 
@@ -41,61 +32,97 @@ Programa:
 
 DeclLista:
     Decl DeclLista { 
+        YYSTYPE t = $1;
+        if (t != NULL){
+            while (t->sibling != NULL)
+                t = t->sibling;
+            t->sibling = $2;
             $$ = $1;
         }
-    | /* epsilon */ { $$ = NULL; }
+        else $$ = $2;
+    } | /* epsilon */ { $$ = NULL; }
 ;
 
 Decl:
-    TipoEspec ID PEV { 
-        $$ = newNode();
-        $$->value = strdup("ID"); // Corrigindo atribuição de string constante
+    TipoEspec ID PEV {
+        $$ = newExpNode(VarDeclK);
+        $$->attr.name = copyString(yytext);
         $$->child[0] = $1;
-        $$->child[1] = newNode();
-        $$->child[1]->value = strdup("PEV"); // Corrigindo atribuição de string constante
-    }
-    | FunDecl { $$ = $1; }
+        $$->kind.exp = VarDeclK;
+        $$->lineno = yylineno;
+    } | FunDecl { $$ = $1; }
 ;
 
 TipoEspec:
     INT {
-        $$ = newNode();
-        $$->value = strdup("INT");
-    }
-    | VOID {
-        $$ = newNode();
-        $$->value = strdup("VOID");
+        $$ = newExpNode(TypeK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.exp = TypeK; 
+    } | VOID {
+        $$ = newExpNode(TypeK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.exp = TypeK;
     }
 ;
 
 FunDecl:
     TipoEspec ID APA Params FPA CompostoDecl {
-        $$ = $1;
-        $1->child[0] = newNode();
-        $1->child[0]->value = strdup("ID");
-        $1->sibling = newNode();
-        $1->sibling = newNode();
-        $1->sibling->value = strdup("APA");
+        $$ = newExpNode(FunDeclK);
+        $$->kind.exp = FunDeclK;
+        $$->attr.name = copyString(yytext);
+        $$->child[0] = $1;
+        $$->child[1] = $4;
+        $$->child[2] = $6;
     }
+
 ;
 
 Params:
     ParamLista { $$ = $1; }
-    | VOID
+    | VOID {
+        $$ = newExpNode(TypeK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.exp = TypeK;
+    }
 ;
 
 ParamLista:
-    Param VIR ParamLista
-    | Param
+    Param VIR ParamLista {
+        YYSTYPE t = $1;
+        if (t != NULL){
+            while (t->sibling != NULL)
+                t = t->sibling;
+            t->sibling = $3;
+            $$ = $1;
+        }
+    } | Param { $$ = $1; }
 ;
 
 Param:
-    TipoEspec ID
-    | TipoEspec ID ACO FCO
+    TipoEspec ID {
+        $$ = newExpNode(VarParamK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.exp = VarParamK;
+        $$->child[0] = $1;
+    } | TipoEspec ID ACO FCO {
+        $$ = newExpNode(VetParamK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.exp = VetParamK;
+        $$->child[0] = $1;
+    }
 ;
 
 CompostoDecl:
-    ACH LocalDecl ComandoLista FCH
+    ACH LocalDecl ComandoLista FCH {
+        YYSTYPE t = $2;
+        if (t != NULL){
+            while (t->sibling != NULL)
+                t = t->sibling;
+            t->sibling = $3;
+            $$ = $2;
+        }
+        else $$ = $3;
+    }
 ;
 
 LocalDecl:
@@ -103,7 +130,16 @@ LocalDecl:
 ;
 
 ComandoLista:
-    Comando ComandoLista
+    Comando ComandoLista {
+        YYSTYPE t = $1;
+        if (t != NULL){
+            while (t->sibling != NULL)
+                t = t->sibling;
+            t->sibling = $2;
+            $$ = $1;
+        }
+        else $$ = $2;
+    }
     | /* epsilon */ { $$ = NULL; }
 ;
 
@@ -116,82 +152,167 @@ Comando:
 ;
 
 ExpDecl:
-    Exp PEV
+    Exp PEV { $$ = $1; }
     | PEV
 ;
 
 SelecaoDecl:
-    IF APA Exp FPA Comando ELSE Comando
-    | IF APA Exp FPA Comando
+    IF APA Exp FPA Comando ELSE Comando {
+        $$ = newStmtNode(IfK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.stmt = IfK;
+        $$->child[0] = $3;
+        $$->child[1] = $5;
+        $$->child[2] = $7;
+    }
+    | IF APA Exp FPA Comando {
+        $$ = newStmtNode(IfK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.stmt = IfK;
+        $$->child[0] = $3;
+        $$->child[1] = $5;
+    }
 ;
 
 IteracaoDecl:
-    WHILE APA Exp FPA Comando
+    WHILE APA Exp FPA Comando {
+        $$ = newStmtNode(WhileK);
+        $$->attr.name = copyString(yytext);
+        $$->kind.stmt = WhileK;
+        $$->child[0] = $3;
+        $$->child[1] = $5;
+    }
 ;
 
 RetornoDecl:
-    RETURN PEV
-    | RETURN Exp PEV
+    RETURN PEV { $$ = newStmtNode(ReturnVOID); }
+    | RETURN Exp PEV {
+        $$ = newStmtNode(ReturnINT);
+        $$->child[0] = $2;
+    }
 ;
 
 Exp:
-    Var ATR Exp
-    | SimplesExp { $$ = $1; }
+    Var ATR Exp {
+        $$ = newStmtNode(AssignK);
+        $$->kind.stmt = AssignK;
+        $$->attr.name= $1->attr.name;
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+    } | SimplesExp { $$ = $1; }
 ;
 
 Var:
-    ID
-    | ID ACO Exp FCO
+    ID {
+        $$ = newExpNode(IdK);
+        $$->attr.name = copyString(yytext);
+
+    } | ID ACO Exp FCO {
+        $$ = newExpNode(IdK);
+        $$->attr.name = $1->attr.name;
+        $$->child[0] = $3;
+    }
 ;
 
 SimplesExp:
-    SomaExp Relacional SomaExp
+    SomaExp Relacional SomaExp {
+        $$ = newStmtNode(AssignK);
+        $$ = $2;
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+    }
     | SomaExp { $$ = $1; }
 ;
 
 Relacional:
-    MEN
-    | MMI
-    | MIG
-    | MAI
-    | IGU
-    | DIF
+    MEN {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | MMI {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | MIG {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | MAI {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | IGU {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | DIF  {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    }
 ;
 
 SomaExp:
-    SomaExp Soma Termo
-    | Termo { $$ = $1; }
+    SomaExp Soma Termo {
+        $$ = $2;
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+    } | Termo { $$ = $1; }
 ;
 
 Soma:
-    SOM
-    | SUB
+    SOM {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | SUB {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    }
 ;
 
 Termo:
-    Termo Mult Fator
-    | Fator { $$ = $1; }
+    Termo Mult Fator {
+        $$ = $2;
+        $$->child[0] = $1;
+        $$->child[1] = $3;
+    } | Fator { $$ = $1; }
 ;
 
 Mult:
-    MUL
-    | DIV
+    MUL {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    } | DIV {
+        $$ = newExpNode(OpK);
+        $$->attr.name = copyString(yytext);
+    }
 ;
 
 Fator:
-    APA Exp FPA
+    APA Exp FPA { $$ = $2; } 
     | Var { $$ = $1; }
     | Ativacao { $$ = $1; }
-    | NUM
+    | NUM {
+        $$ = newExpNode(ConstK);
+        $$->attr.name = copyString(yytext);
+        $$->attr.val = atoi(yytext);
+    }
 ;
 
 Ativacao:
-    ID APA ArgLista FPA
+    ID APA ArgLista FPA {
+        $$ = newExpNode(AtivK);
+        $$->kind.exp = AtivK;
+        $$->attr.name = $1->attr.name;
+        $$->child[0] = $3;
+    }
 ;
 
 ArgLista:
-    ArgLista VIR Exp
-    | Exp { $$ = $1; }
+    ArgLista VIR Exp {
+        YYSTYPE t = $1;
+        if (t != NULL){
+            while (t->sibling != NULL)
+                t = t->sibling;
+            t->sibling = $3;
+            $$ = $1;
+        }
+        else $$ = $3;
+    } | Exp { $$ = $1; }
     | /* epsilon */ { $$ = NULL; }
 ;
 
@@ -200,36 +321,6 @@ ArgLista:
 // Função para tratamento de erros
 void yyerror(const char *s) {
     fprintf(stderr, "ERRO SINTÁTICO: '%s' LINHA: %d\n", yytext, yylineno);
-}
-
-void printTree(TreeNode *tree, int level) {
-    printf("entrou");
-    if (tree == NULL) {
-        printf("ta vazia");
-        return;
-    }
-
-    printf("'nao ta vazia'\n\n");
-    
-    // Imprime a indentação correspondente ao nível da árvore
-    for (int i = 0; i < level; i++) {
-        printf("  ");
-    }
-    
-    // Imprime o tipo do nó e, se houver, seu valor
-    if (tree->value) {
-        printf("%s: %s (Linha: %d)\n", tree->type, tree->value, tree->lineno);
-    } else {
-        printf("%s (Linha: %d)\n", tree->type, tree->lineno);
-    }
-    
-    // Chama recursivamente para os filhos
-    for (int i = 0; i < MAXCHILDREN; i++) {
-        printTree(tree->child[i], level + 1);
-    }
-    
-    // Chama recursivamente para os irmãos
-    printTree(tree->sibling, level);
 }
 
 int main(int argc, char *argv[]) {
@@ -254,28 +345,10 @@ int main(int argc, char *argv[]) {
     // Verifica o resultado da análise
     if (parse_result == 0) {
         printf("Análise sintática bem-sucedida! A sintaxe está correta.\n");
-
-        printTree(arvoreSintatica, 0);
+        printTree(arvoreSintatica);
     } else {
         printf("Erro na análise sintática.\n");
     }
 
     return 0;
-}
-
-TreeNode * newNode() {
-    TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
-    int i;
-    if (t == NULL) {
-        printf("Out of memory error\n");
-    } else {
-        printf("criou");
-        for (i = 0; i < MAXCHILDREN; i++) 
-            t->child[i] = NULL;
-        t->sibling = NULL;
-        t->type = NULL;
-        t->value = NULL;
-    }
-
-    return t;
 }
