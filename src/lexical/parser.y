@@ -297,7 +297,7 @@ Ativacao:
     ID APA ArgLista FPA {
         $$ = newExpNode(AtivK);
         $$->kind.exp = AtivK;
-        $$->attr.name = $1->attr.name;
+        $$->attr.name = copyString(yytext);
         $$->child[0] = $3;
     }
 ;
