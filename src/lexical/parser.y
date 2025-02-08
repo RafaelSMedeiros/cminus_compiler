@@ -7,6 +7,10 @@
     #include "globals.h"
     #include "util.h"
 
+    #define MAXTOKENLEN 40
+    extern char tokenID[MAXTOKENLEN+1];  // Declaração externa de tokenID
+
+
     extern int yylex();
     extern int yylineno; 
     extern char *yytext; 
@@ -31,7 +35,7 @@ Programa:
 ;
 
 DeclLista:
-    Decl DeclLista { 
+    DeclLista Decl { 
         YYSTYPE t = $1;
         if (t != NULL){
             while (t->sibling != NULL)
@@ -44,14 +48,19 @@ DeclLista:
 ;
 
 Decl:
-    TipoEspec ID PEV {
-        $$ = newExpNode(VarDeclK);
-        $$->attr.name = copyString(yytext);
-        $$->child[0] = $1;
-        $$->kind.exp = VarDeclK;
-        $$->lineno = yylineno;
+    TipoEspec varID PEV {
+        $$ = $2;
+        $$->attr.name = $2->attr.name;
+        $2->child[0] = $1;
     } | FunDecl { $$ = $1; }
 ;
+
+varID:
+    ID {
+        $$ = newExpNode(IdK);
+        $$->attr.name = copyString(tokenID);
+        $$->kind.exp = IdK;
+    } 
 
 TipoEspec:
     INT {
@@ -66,29 +75,36 @@ TipoEspec:
 ;
 
 FunDecl:
-    TipoEspec ID APA Params FPA CompostoDecl {
+    TipoEspec funID APA Params FPA CompostoDecl {
         printf("aqui: %s\n", yytext);
         $$ = newExpNode(FunDeclK);
         $$->kind.exp = FunDeclK;
-        $$->attr.name = copyString(yytext);
+        $$->attr.name = $2->attr.name;
         $$->child[0] = $1;
         $$->child[1] = $4;
         $$->child[2] = $6;
     }
+;
 
+funID:
+    ID {
+        $$ = newExpNode(IdK);
+        $$->attr.name = copyString(tokenID);
+        $$->kind.exp = IdK;
+    }
 ;
 
 Params:
     ParamLista { $$ = $1; }
     | VOID {
         $$ = newExpNode(TypeK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.name = copyString(tokenID);
         $$->kind.exp = TypeK;
     }
 ;
 
 ParamLista:
-    Param VIR ParamLista {
+    ParamLista VIR Param {
         YYSTYPE t = $1;
         if (t != NULL){
             while (t->sibling != NULL)
@@ -102,7 +118,7 @@ ParamLista:
 Param:
     TipoEspec ID {
         $$ = newExpNode(VarParamK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.name = copyString(tokenID);
         $$->kind.exp = VarParamK;
         $$->child[0] = $1;
     } | TipoEspec ID ACO FCO {
@@ -131,7 +147,7 @@ LocalDecl:
 ;
 
 ComandoLista:
-    Comando ComandoLista {
+    ComandoLista Comando {
         YYSTYPE t = $1;
         if (t != NULL){
             while (t->sibling != NULL)
@@ -206,7 +222,7 @@ Exp:
 Var:
     ID {
         $$ = newExpNode(IdK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.name = copyString(tokenID);
 
     } | ID ACO Exp FCO {
         $$ = newExpNode(IdK);
@@ -295,11 +311,15 @@ Fator:
 ;
 
 Ativacao:
-    ID APA ArgLista FPA {
+    funID APA ArgLista FPA {
         $$ = newExpNode(AtivK);
+        $$->attr.name = $1->attr.name;
         $$->kind.exp = AtivK;
-        $$->attr.name = copyString(yytext);
         $$->child[0] = $3;
+    } | funID APA FPA {
+        $$ = newExpNode(AtivK);
+        $$->attr.name = $1->attr.name;
+        $$->kind.exp = AtivK;
     }
 ;
 
@@ -314,7 +334,6 @@ ArgLista:
         }
         else $$ = $3;
     } | Exp { $$ = $1; }
-    | /* epsilon */ { $$ = NULL; }
 ;
 
 %%

@@ -4,7 +4,8 @@
     #include "util.h"
 
     #define MAXTOKENLEN 40
-    char tokenString[MAXTOKENLEN+1];
+    char tokenID[MAXTOKENLEN+1];  // Variável global
+
 
     extern YYSTYPE yylval;  // Garantir que o Bison use YYSTYPE
 %}
@@ -20,7 +21,7 @@ ID [a-zA-Z][a-zA-Z0-9]*
 "if" { return IF; }
 "int" { return INT; }
 "return" { return RETURN; }
-"void" { return VOID; }
+"void" { strncpy(tokenID, yytext, MAXTOKENLEN); return VOID; }
 "while" { return WHILE; }
 
 "+" { return SOM; }
@@ -38,13 +39,16 @@ ID [a-zA-Z][a-zA-Z0-9]*
 "," { return VIR; }
 "(" { return APA; }
 ")" { return FPA; }
-"[" { return ACO; }
+"[" { return ACO; } 
 "]" { return FCO; }
 "{" { return ACH; }
 "}" { return FCH; }
 
 {NUM} { return NUM; }
-{ID}  { return ID; }
+{ID} {
+    strncpy(tokenID, yytext, MAXTOKENLEN);  // Aqui o Flex preenche tokenID
+    return ID;
+}
 
 [ \t\n]+ ;  // Ignorar espaços, tabs e quebras de linha
 
