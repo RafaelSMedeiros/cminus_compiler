@@ -29,7 +29,7 @@ void printTree( TreeNode * );
 
 void buildSymtab(TreeNode *);
 
-void st_insert( char * name, int lineno);
+void st_insert( char * name, int lineno, DataTypes type, IDTypes idtype, char * escopo);
 
 int st_lookup ( char * name );
 

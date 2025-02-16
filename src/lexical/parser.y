@@ -10,7 +10,6 @@
     #define MAXTOKENLEN 40
     extern char tokenID[MAXTOKENLEN+1];  // Declaração externa de tokenID
 
-
     extern int yylex();
     extern int yylineno; 
     extern char *yytext; 
@@ -68,16 +67,17 @@ TipoEspec:
         $$ = newExpNode(TypeK);
         $$->attr.name = copyString(yytext);
         $$->kind.exp = TypeK; 
+        $$->type = INT_TYPE;
     } | VOID {
         $$ = newExpNode(TypeK);
         $$->attr.name = copyString(yytext);
         $$->kind.exp = TypeK;
+        $$->type = VOID_TYPE;
     }
 ;
 
 FunDecl:
     TipoEspec funID APA Params FPA CompostoDecl {
-        printf("aqui: %s\n", yytext);
         $$ = newExpNode(FunDeclK);
         $$->kind.exp = FunDeclK;
         $$->attr.name = $2->attr.name;
@@ -85,6 +85,7 @@ FunDecl:
         $$->child[0] = $1;
         $$->child[1] = $4;
         $$->child[2] = $6;
+        $$->type = $1->type;
     }
 ;
 
@@ -126,12 +127,14 @@ Param:
         $$->kind.exp = VarParamK;
         $$->lineno = lineno;
         $$->child[0] = $1;
+        $$->type = $1->type;
     } | TipoEspec ID ACO FCO {
         $$ = newExpNode(VetParamK);
         $$->attr.name = copyString(yytext);
         $$->kind.exp = VetParamK;
         $$->lineno = lineno;
         $$->child[0] = $1;
+        $$->type = $1->type;
     }
 ;
 
@@ -332,7 +335,7 @@ Fator:
         $$ = newExpNode(ConstK);
         $$->attr.name = copyString(yytext);
         $$->attr.val = atoi(yytext);
-        $$->type = INTTYPE
+        $$->type = INT_TYPE;
     }
 ;
 
@@ -366,7 +369,7 @@ ArgLista:
 
 %%
 
-// Função para tratamento de erros
+// Função para tratamento de erros sintaticos
 void yyerror(const char *s) {
     fprintf(stderr, "ERRO SINTÁTICO: '%s' LINHA: %d\n", yytext, lineno);
 }

@@ -3,12 +3,11 @@
 
 #define INDENT indentno += 2
 #define UNINDENT indentno -= 2
-
 static int indentno = 0;
 
 #define SIZE 211
 #define SHIFT 4
-static int hash(char *key)
+static int hash(char *key) // Função de hash
 {
     int temp = 0;
     int i = 0;
@@ -20,12 +19,10 @@ static int hash(char *key)
     return temp;
 }
 
-int lineno = 1; // Definição única da variável
+int lineno = 1; // Contador de linhas no código fonte
+char *escopo = "global"; // Escopo atual da análise.
 
-/* Function newStmtNode creates a new statement
- * node for syntax tree construction
- */
-
+// Função para imprimir o token
 void printToken(TokenType token, const char *tokenString)
 {
     switch (token)
@@ -110,49 +107,43 @@ void printToken(TokenType token, const char *tokenString)
     }
 }
 
-TreeNode *newStmtNode(StmtKind kind)
+// Função para criar um novo noh de declaração
+TreeNode *newStmtNode(StmtKind kind) 
 {
     TreeNode *t = (TreeNode *)malloc(sizeof(TreeNode));
     int i;
     if (t == NULL)
-        // fprintf(listing,"Out of memory error at line %d\n",lineno);
-        printf("Out of memory error at line\n");
+        printf("Out of memory error at line\n"); // Erro de memória
     else
     {
-        for (i = 0; i < MAXCHILDREN; i++)
+        for (i = 0; i < MAXCHILDREN; i++) // Inicializa os filhos como null
             t->child[i] = NULL;
-        t->sibling = NULL;
+        t->sibling = NULL; // Inicializa o irmão como null
         t->nodekind = StmtK;
         t->kind.stmt = kind;
-        // t->lineno = lineno;
     }
     return t;
 }
 
-/* Function newExpNode creates a new expression
- * node for syntax tree construction
- */
-TreeNode *newExpNode(ExpKind kind)
+// Função para criar um novo noh de expressão
+TreeNode *newExpNode(ExpKind kind) 
 {
     TreeNode *t = (TreeNode *)malloc(sizeof(TreeNode));
     int i;
     if (t == NULL)
-        // fprintf(listing,"Out of memory error at line %d\n",lineno);
-        printf("Out of memory error at line\n");
+        printf("Out of memory error at line\n"); // Erro de memória
     else
     {
-        for (i = 0; i < MAXCHILDREN; i++)
+        for (i = 0; i < MAXCHILDREN; i++) // Inicializa os filhos como null
             t->child[i] = NULL;
-        t->sibling = NULL;
+        t->sibling = NULL; // Inicializa o irmão como null
         t->nodekind = ExpK;
         t->kind.exp = kind;
-        // t->lineno = lineno;
-        // t->type = Void;
     }
     return t;
 }
 
-char *copyString(char *s)
+char *copyString(char *s) // Função para copiar uma string
 {
     int n;
     char *t;
@@ -162,7 +153,6 @@ char *copyString(char *s)
     t = (char *)malloc(n);
     if (t == NULL)
         printf("Out of memory error at line\n");
-    // fprintf(listing,"Out of memory error at line %d\n",lineno);
     else
         strcpy(t, s);
     return t;
@@ -177,13 +167,12 @@ static void printSpaces(void)
     }
 }
 
-void printTree(TreeNode *tree)
+void printTree(TreeNode *tree) // Função para imprimir a árvore sintática
 {
     int i;
     INDENT;
     while (tree != NULL)
     {
-        printf(" %d", tree->lineno);
         printSpaces();
         if (tree->nodekind == StmtK)
         {
@@ -263,19 +252,26 @@ void printTree(TreeNode *tree)
     UNINDENT;
 }
 
-static void
-traverse(TreeNode *t,
-         void (*preProc)(TreeNode *),
-         void (*postProc)(TreeNode *))
+// Função para percorrer a árvore sintática
+static void traverse(TreeNode *t, void (*preProc)(TreeNode *), void (*postProc)(TreeNode *)) 
 {
-    if (t != NULL)
-    {
-        preProc(t);
+    if (t != NULL) {
+ 
+        preProc(t); 
         {
+            if (t->kind.exp == FunDeclK) { // Se for uma declaração de função, atualiza o escopo
+                escopo = t->attr.name;
+            }
+
             int i;
-            for (i = 0; i < MAXCHILDREN; i++)
+            for (i = 0; i < MAXCHILDREN; i++) 
                 traverse(t->child[i], preProc, postProc);
         }
+
+        if (t->child[0] != NULL && t->kind.exp == FunDeclK) { // Volta para o escopo global
+            escopo = "global";
+        }
+
         postProc(t);
         traverse(t->sibling, preProc, postProc);
     }
@@ -289,19 +285,19 @@ static void nullProc(TreeNode *t)
         return;
 }
 
-static void insertNode(TreeNode *t)
+static void insertNode(TreeNode *t) // Função para inserir um nó na tabela de símbolos
 {
-    switch (t->nodekind)
+    switch (t->nodekind) // Verifica o tipo de nó
     {
-    case StmtK:
-        switch (t->kind.stmt)
+    case StmtK: 
+        switch (t->kind.stmt) // Verifica o tipo de declaração
         {
-        case ReturnINT:
-            st_insert("return", t->lineno);
+        case ReturnINT: // Se for um retorno de inteiro
+            st_insert("return", t->lineno, t->type, RETT, escopo);
             break;
 
-        case ReturnVOID:
-            st_insert("return", t->lineno);
+        case ReturnVOID: // Se for um retorno de void
+            st_insert("return", t->lineno, t->type, RETT, escopo);
             break;
 
         default:
@@ -310,52 +306,47 @@ static void insertNode(TreeNode *t)
         break;
 
     case ExpK:
-        switch (t->kind.exp)
+        switch (t->kind.exp) // Verifica o tipo de expressão
         {
-        case IdK:
+        case IdK: // Se for uma variável
             if (st_lookup(t->attr.name) == -1)
             { // Se não estiver na tabela, insere
-                st_insert(t->attr.name, t->lineno);
+                st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
             }
             else
                 /* already in table, so ignore location,
                    add line number of use only */
-                st_insert(t->attr.name, t->lineno);
+                st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
             break;
 
-        case VarDeclK:
+        case VarDeclK: // Se for uma declaração de variável
             if (st_lookup(t->attr.name) == -1)
             { // Se não estiver na tabela, insere
-                st_insert(t->attr.name, t->lineno);
+                st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
             }
             break;
 
-        case VetorK:
-            st_insert(t->attr.name, t->lineno);
+        case VetorK: // Se for um vetor
+            st_insert(t->attr.name, t->lineno, t->type, VET, escopo);
             break;
 
-        case FunDeclK:
-            // if (strcmp(t->child[1]->attr.name, "void") == 0) {
-            //     TIPO = VOIDTYPE;
-            // } else {
-            //     TIPO = INTTYPE;
-            // }
+        case FunDeclK: // Se for uma declaração de função
             if (st_lookup(t->attr.name) == -1)
             { // Se não estiver na tabela, insere
-                st_insert(t->attr.name, t->lineno);
+                st_insert(t->attr.name, t->lineno, t->type, FUN, escopo);
             }
             break;
 
-        case AtivK:
-            st_insert(t->attr.name, t->lineno);
+        case AtivK: // Se for uma chamada de função
+            st_insert(t->attr.name, t->lineno, t->type, CALL, escopo);
             break;
 
-        case VarParamK:
-            st_insert(t->attr.name, t->lineno);
+        case VarParamK: // Se for um parâmetro de variável
+            st_insert(t->attr.name, t->lineno, t->type, PVAR, escopo);
             break;
 
-        case VetParamK:
-            st_insert(t->attr.name, t->lineno);
+        case VetParamK: // Se for um parâmetro de vetor
+            st_insert(t->attr.name, t->lineno, t->type, VET, escopo);
             break;
 
         default:
@@ -367,46 +358,55 @@ static void insertNode(TreeNode *t)
     }
 }
 
-void buildSymtab(TreeNode *syntaxTree)
+void buildSymtab(TreeNode *syntaxTree) // Função para construir a tabela de símbolos
 {
     traverse(syntaxTree, insertNode, nullProc);
     printSymTab();
 }
 
-typedef struct LineListRec
+typedef struct LineListRec // Estrutura da lista de linhas
 {
     int lineno;
-    struct LineListRec *next;
+    struct LineListRec *next; // Ponteiro para a próxima linha
 } *LineList;
 
-typedef struct BucketListRec
+typedef struct BucketListRec // Estrutura da lista da lista
 {
     char *name;
+    IDTypes idtype;
+    DataTypes type;
+    char *escopo;
     LineList lines;
-    int memloc; /* memory location for variable */
+
+    int memloc;
     struct BucketListRec *next;
 } *BucketList;
 
-/* the hash table */
+// Tabela hash de símbolos
 static BucketList hashTable[SIZE];
 
-void st_insert(char *name, int lineno)
+void st_insert(char *name, int lineno, DataTypes type, IDTypes idtype, char *escopo) // Função para inserir um nó na tabela de símbolos
 {
-    int h = hash(name);
-    BucketList l = hashTable[h];
-    while ((l != NULL) && (strcmp(name, l->name) != 0))
+    int h = hash(name); // Calcula o hash
+    BucketList l = hashTable[h]; // Pega o nó da tabela
+
+    while ((l != NULL) && (strcmp(name, l->name) != 0)) // Percorre a tabela ate encontrar o nó
         l = l->next;
-    if (l == NULL) /* variable not yet in table */
+
+    if (l == NULL) // Se não encontrou, insere
     {
         l = (BucketList)malloc(sizeof(struct BucketListRec));
         l->name = name;
         l->lines = (LineList)malloc(sizeof(struct LineListRec));
         l->lines->lineno = lineno;
         l->lines->next = NULL;
+        l->type = type;
+        l->idtype = idtype;
+        l->escopo = escopo;
         l->next = hashTable[h];
         hashTable[h] = l;
     }
-    else /* found in table, so just add line number */
+    else // Se encontrou, atualiza as linhas
     {
         LineList t = l->lines;
         while (t->next != NULL)
@@ -415,42 +415,62 @@ void st_insert(char *name, int lineno)
         t->next->lineno = lineno;
         t->next->next = NULL;
     }
-} /* st_insert */
+}
 
-int st_lookup(char *name)
+
+int st_lookup(char *name) // Função para procurar um noh na tabela de símbolos
 {
-    int h = hash(name);
-    BucketList l = hashTable[h];
-    while ((l != NULL) && (strcmp(name, l->name) != 0))
+    int h = hash(name); // Calcula o hash
+    BucketList l = hashTable[h]; // Pega o nó da tabela
+
+    while ((l != NULL) && (strcmp(name, l->name) != 0)) // Percorre a tabela ate encontrar o noh
         l = l->next;
-    if (l == NULL)
+
+    if (l == NULL) // Se nao encontrou, retorna -1
         return -1;
     else
         return l->memloc;
 }
 
-void printSymTab()
-{
+void printSymTab() { // Função para imprimir a tabela de símbolos
     int i;
-    printf("Variable Name   Line Numbers\n");
-    printf("-------------   ------------\n");
-    for (i = 0; i < SIZE; ++i)
-    {
-        if (hashTable[i] != NULL)
-        {
-            BucketList l = hashTable[i];
-            while (l != NULL)
-            {
+    printf("%-14s %-10s %-8s %-14s %s\n", "Variable Name", "DataType", "IDType", "Scope", "Line Numbers");
+    printf("-------------- ---------- -------- -------------- -------------------------\n");
+
+    for (i = 0; i < SIZE; ++i) { // Percorre a tabela
+        if (hashTable[i] != NULL) { // Se o noh não for nulo 
+            BucketList l = hashTable[i]; // Pega o noh
+
+            while (l != NULL) { // Percorre a lista ate o final
                 LineList t = l->lines;
+
+                // Nome da variável
                 printf("%-14s ", l->name);
-                while (t != NULL)
-                {
-                    printf("%4d ", t->lineno);
+
+                // Tipo de dado (INT ou VOID)
+                printf("%-10s ", (l->type == INT_TYPE) ? "INT" : "VOID");
+
+                // Tipo de identificador
+                printf("%-8s ", 
+                    (l->idtype == VAR)  ? "VAR"  :
+                    (l->idtype == PVAR) ? "PVAR" :
+                    (l->idtype == FUN)  ? "FUN"  :
+                    (l->idtype == CALL) ? "CALL" :
+                    (l->idtype == VET)  ? "VET"  : "RET");
+
+                // Escopo
+                printf("%-14s ", l->escopo);
+
+                // Lista de números de linha
+                while (t != NULL) {
+                    printf("%-3d ", t->lineno);  // Espaço fixo para alinhar corretamente
                     t = t->next;
                 }
+
                 printf("\n");
                 l = l->next;
             }
         }
     }
-} /* printSymTab */
+}
+

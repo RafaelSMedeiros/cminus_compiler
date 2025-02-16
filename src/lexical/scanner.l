@@ -6,7 +6,6 @@
     #define MAXTOKENLEN 40
     char tokenID[MAXTOKENLEN+1];  // Variável global
 
-
     extern YYSTYPE yylval;  // Garantir que o Bison use YYSTYPE
 %}
 

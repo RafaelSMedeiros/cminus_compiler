@@ -23,7 +23,6 @@
 #endif
 
 extern int lineno; // Contador de linhas no código fonte
-
 typedef int TokenType;
 
 // Tipo do noh da arvore
@@ -43,7 +42,7 @@ typedef enum {
 
 // Tipo de expressao de noh
 typedef enum {
-    OpK, // Kind of Operation (Tipo de Operação)
+    OpK, // Tipo de Operação
     ConstK, // Valor numérico constante.
     IdK, // Uso de variável.
     VarDeclK, // Declaração de variável.
@@ -63,21 +62,34 @@ typedef enum {
     NULL_TYPE
 } DataTypes;
 
+// Tipo de identificador
+typedef enum {
+    VAR,
+    PVAR,
+    FUN,
+    CALL,
+    VET,
+    PVET,
+    RETT
+} IDTypes;
+
+// Estrutura da arvore sintática
 #define MAXCHILDREN 3
 typedef struct treeNode {
-    struct treeNode * child[MAXCHILDREN];
-    struct treeNode * sibling;
+    struct treeNode * child[MAXCHILDREN]; // Vetor de ponteiros para os filhos
+    struct treeNode * sibling; // Ponteiro para o irmão
     int lineno;
-    NodeKind nodekind;
+    NodeKind nodekind; 
     
-    union { 
+    union {  
        StmtKind stmt;
        ExpKind exp;
     } kind;
 
-    union { TokenType op;
-             int val;
-             char * name; 
+    union { 
+        TokenType op;
+        int val;
+        char * name; 
     } attr;
     
     DataTypes type;
