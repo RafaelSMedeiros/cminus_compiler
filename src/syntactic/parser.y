@@ -6,6 +6,7 @@
     #include <string.h>
     #include "globals.h"
     #include "util.h"
+    #include "symtab.h"
 
     #define MAXTOKENLEN 40
     extern char tokenID[MAXTOKENLEN+1];  // Declaração externa de tokenID
