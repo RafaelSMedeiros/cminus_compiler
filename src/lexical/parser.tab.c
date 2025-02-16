@@ -80,19 +80,17 @@
     #define MAXTOKENLEN 40
     extern char tokenID[MAXTOKENLEN+1];  // Declaração externa de tokenID
 
-
     extern int yylex();
     extern int yylineno; 
     extern char *yytext; 
     void yyerror(const char *s);
     extern FILE *yyin;
 
-
     #define YYSTYPE TreeNode *
     static TreeNode * arvoreSintatica; /* Armazena a árvore sintática */
 
 
-#line 96 "parser.tab.c"
+#line 94 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -568,13 +566,13 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    35,    35,    39,    48,    52,    57,    61,    68,    73,
-      82,    96,   105,   106,   115,   123,   127,   134,   145,   158,
-     162,   172,   176,   177,   178,   179,   180,   184,   185,   189,
-     198,   209,   220,   221,   229,   236,   240,   245,   254,   260,
-     264,   268,   272,   276,   280,   284,   292,   297,   301,   305,
-     313,   318,   322,   326,   334,   335,   336,   337,   346,   352,
-     361,   370
+       0,    33,    33,    37,    46,    50,    55,    59,    66,    71,
+      80,    93,   102,   103,   112,   120,   124,   131,   142,   155,
+     159,   169,   173,   174,   175,   176,   177,   181,   182,   186,
+     195,   206,   217,   218,   226,   233,   237,   242,   251,   257,
+     261,   265,   269,   273,   277,   281,   289,   294,   298,   302,
+     310,   315,   319,   323,   331,   332,   333,   334,   343,   349,
+     358,   367
 };
 #endif
 
@@ -1199,13 +1197,13 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Programa: DeclLista  */
-#line 35 "parser.y"
+#line 33 "parser.y"
               { arvoreSintatica = yyvsp[0]; }
-#line 1205 "parser.tab.c"
+#line 1203 "parser.tab.c"
     break;
 
   case 3: /* DeclLista: DeclLista Decl  */
-#line 39 "parser.y"
+#line 37 "parser.y"
                    { 
         YYSTYPE t = yyvsp[-1];
         if (t != NULL){
@@ -1216,68 +1214,67 @@ yyreduce:
         }
         else yyval = yyvsp[0];
     }
-#line 1220 "parser.tab.c"
+#line 1218 "parser.tab.c"
     break;
 
   case 4: /* DeclLista: %empty  */
-#line 48 "parser.y"
+#line 46 "parser.y"
                       { yyval = NULL; }
-#line 1226 "parser.tab.c"
+#line 1224 "parser.tab.c"
     break;
 
   case 5: /* Decl: TipoEspec varID PEV  */
-#line 52 "parser.y"
+#line 50 "parser.y"
                         {
         yyval = yyvsp[-1];
         yyval->attr.name = yyvsp[-1]->attr.name;
         yyval->lineno = lineno;
         yyvsp[-1]->child[0] = yyvsp[-2];
     }
-#line 1237 "parser.tab.c"
+#line 1235 "parser.tab.c"
     break;
 
   case 6: /* Decl: FunDecl  */
-#line 57 "parser.y"
+#line 55 "parser.y"
                 { yyval = yyvsp[0]; }
-#line 1243 "parser.tab.c"
+#line 1241 "parser.tab.c"
     break;
 
   case 7: /* varID: ID  */
-#line 61 "parser.y"
+#line 59 "parser.y"
        {
         yyval = newExpNode(IdK);
         yyval->attr.name = copyString(tokenID);
         yyval->kind.exp = IdK;
     }
-#line 1253 "parser.tab.c"
+#line 1251 "parser.tab.c"
     break;
 
   case 8: /* TipoEspec: INT  */
-#line 68 "parser.y"
+#line 66 "parser.y"
         {
         yyval = newExpNode(TypeK);
         yyval->attr.name = copyString(yytext);
         yyval->kind.exp = TypeK; 
         yyval->type = INT_TYPE;
     }
-#line 1264 "parser.tab.c"
+#line 1262 "parser.tab.c"
     break;
 
   case 9: /* TipoEspec: VOID  */
-#line 73 "parser.y"
+#line 71 "parser.y"
              {
         yyval = newExpNode(TypeK);
         yyval->attr.name = copyString(yytext);
         yyval->kind.exp = TypeK;
         yyval->type = VOID_TYPE;
     }
-#line 1275 "parser.tab.c"
+#line 1273 "parser.tab.c"
     break;
 
   case 10: /* FunDecl: TipoEspec funID APA Params FPA CompostoDecl  */
-#line 82 "parser.y"
+#line 80 "parser.y"
                                                 {
-        printf("aqui: %s\n", yytext);
         yyval = newExpNode(FunDeclK);
         yyval->kind.exp = FunDeclK;
         yyval->attr.name = yyvsp[-4]->attr.name;
@@ -1287,39 +1284,39 @@ yyreduce:
         yyval->child[2] = yyvsp[0];
         yyval->type = yyvsp[-5]->type;
     }
-#line 1291 "parser.tab.c"
+#line 1288 "parser.tab.c"
     break;
 
   case 11: /* funID: ID  */
-#line 96 "parser.y"
+#line 93 "parser.y"
        {
         yyval = newExpNode(IdK);
         yyval->attr.name = copyString(tokenID);
         yyval->kind.exp = IdK;
         yyval->lineno = lineno;
     }
-#line 1302 "parser.tab.c"
+#line 1299 "parser.tab.c"
     break;
 
   case 12: /* Params: ParamLista  */
-#line 105 "parser.y"
+#line 102 "parser.y"
                { yyval = yyvsp[0]; }
-#line 1308 "parser.tab.c"
+#line 1305 "parser.tab.c"
     break;
 
   case 13: /* Params: VOID  */
-#line 106 "parser.y"
+#line 103 "parser.y"
            {
         yyval = newExpNode(TypeK);
         yyval->attr.name = copyString(tokenID);
         yyval->kind.exp = TypeK;
         yyval->lineno = lineno;
     }
-#line 1319 "parser.tab.c"
+#line 1316 "parser.tab.c"
     break;
 
   case 14: /* ParamLista: ParamLista VIR Param  */
-#line 115 "parser.y"
+#line 112 "parser.y"
                          {
         YYSTYPE t = yyvsp[-2];
         if (t != NULL){
@@ -1329,17 +1326,17 @@ yyreduce:
             yyval = yyvsp[-2];
         }
     }
-#line 1333 "parser.tab.c"
+#line 1330 "parser.tab.c"
     break;
 
   case 15: /* ParamLista: Param  */
-#line 123 "parser.y"
+#line 120 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1339 "parser.tab.c"
+#line 1336 "parser.tab.c"
     break;
 
   case 16: /* Param: TipoEspec ID  */
-#line 127 "parser.y"
+#line 124 "parser.y"
                  {
         yyval = newExpNode(VarParamK);
         yyval->attr.name = copyString(tokenID);
@@ -1348,11 +1345,11 @@ yyreduce:
         yyval->child[0] = yyvsp[-1];
         yyval->type = yyvsp[-1]->type;
     }
-#line 1352 "parser.tab.c"
+#line 1349 "parser.tab.c"
     break;
 
   case 17: /* Param: TipoEspec ID ACO FCO  */
-#line 134 "parser.y"
+#line 131 "parser.y"
                              {
         yyval = newExpNode(VetParamK);
         yyval->attr.name = copyString(yytext);
@@ -1361,11 +1358,11 @@ yyreduce:
         yyval->child[0] = yyvsp[-3];
         yyval->type = yyvsp[-3]->type;
     }
-#line 1365 "parser.tab.c"
+#line 1362 "parser.tab.c"
     break;
 
   case 18: /* CompostoDecl: ACH LocalDecl ComandoLista FCH  */
-#line 145 "parser.y"
+#line 142 "parser.y"
                                    {
         YYSTYPE t = yyvsp[-2];
         if (t != NULL){
@@ -1376,17 +1373,17 @@ yyreduce:
         }
         else yyval = yyvsp[-1];
     }
-#line 1380 "parser.tab.c"
+#line 1377 "parser.tab.c"
     break;
 
   case 19: /* LocalDecl: DeclLista  */
-#line 158 "parser.y"
+#line 155 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1386 "parser.tab.c"
+#line 1383 "parser.tab.c"
     break;
 
   case 20: /* ComandoLista: ComandoLista Comando  */
-#line 162 "parser.y"
+#line 159 "parser.y"
                          {
         YYSTYPE t = yyvsp[-1];
         if (t != NULL){
@@ -1397,53 +1394,53 @@ yyreduce:
         }
         else yyval = yyvsp[0];
     }
-#line 1401 "parser.tab.c"
+#line 1398 "parser.tab.c"
     break;
 
   case 21: /* ComandoLista: %empty  */
-#line 172 "parser.y"
+#line 169 "parser.y"
                     { yyval = NULL; }
-#line 1407 "parser.tab.c"
+#line 1404 "parser.tab.c"
     break;
 
   case 22: /* Comando: ExpDecl  */
-#line 176 "parser.y"
+#line 173 "parser.y"
             { yyval = yyvsp[0]; }
-#line 1413 "parser.tab.c"
+#line 1410 "parser.tab.c"
     break;
 
   case 23: /* Comando: CompostoDecl  */
-#line 177 "parser.y"
+#line 174 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1419 "parser.tab.c"
+#line 1416 "parser.tab.c"
     break;
 
   case 24: /* Comando: SelecaoDecl  */
-#line 178 "parser.y"
+#line 175 "parser.y"
                   { yyval = yyvsp[0]; }
-#line 1425 "parser.tab.c"
+#line 1422 "parser.tab.c"
     break;
 
   case 25: /* Comando: IteracaoDecl  */
-#line 179 "parser.y"
+#line 176 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1431 "parser.tab.c"
+#line 1428 "parser.tab.c"
     break;
 
   case 26: /* Comando: RetornoDecl  */
-#line 180 "parser.y"
+#line 177 "parser.y"
                   { yyval = yyvsp[0]; }
-#line 1437 "parser.tab.c"
+#line 1434 "parser.tab.c"
     break;
 
   case 27: /* ExpDecl: Exp PEV  */
-#line 184 "parser.y"
+#line 181 "parser.y"
             { yyval = yyvsp[-1]; }
-#line 1443 "parser.tab.c"
+#line 1440 "parser.tab.c"
     break;
 
   case 29: /* SelecaoDecl: IF APA Exp FPA Comando ELSE Comando  */
-#line 189 "parser.y"
+#line 186 "parser.y"
                                         {
         yyval = newStmtNode(IfK);
         yyval->attr.name = copyString(yytext);
@@ -1453,11 +1450,11 @@ yyreduce:
         yyval->child[1] = yyvsp[-2];
         yyval->child[2] = yyvsp[0];
     }
-#line 1457 "parser.tab.c"
+#line 1454 "parser.tab.c"
     break;
 
   case 30: /* SelecaoDecl: IF APA Exp FPA Comando  */
-#line 198 "parser.y"
+#line 195 "parser.y"
                              {
         yyval = newStmtNode(IfK);
         yyval->attr.name = copyString(yytext);
@@ -1466,11 +1463,11 @@ yyreduce:
         yyval->child[0] = yyvsp[-2];
         yyval->child[1] = yyvsp[0];
     }
-#line 1470 "parser.tab.c"
+#line 1467 "parser.tab.c"
     break;
 
   case 31: /* IteracaoDecl: WHILE APA Exp FPA Comando  */
-#line 209 "parser.y"
+#line 206 "parser.y"
                               {
         yyval = newStmtNode(WhileK);
         yyval->attr.name = copyString(yytext);
@@ -1479,27 +1476,27 @@ yyreduce:
         yyval->child[0] = yyvsp[-2];
         yyval->child[1] = yyvsp[0];
     }
-#line 1483 "parser.tab.c"
+#line 1480 "parser.tab.c"
     break;
 
   case 32: /* RetornoDecl: RETURN PEV  */
-#line 220 "parser.y"
+#line 217 "parser.y"
                { yyval = newStmtNode(ReturnVOID); }
-#line 1489 "parser.tab.c"
+#line 1486 "parser.tab.c"
     break;
 
   case 33: /* RetornoDecl: RETURN Exp PEV  */
-#line 221 "parser.y"
+#line 218 "parser.y"
                      {
         yyval = newStmtNode(ReturnINT);
         yyval->lineno = lineno;
         yyval->child[0] = yyvsp[-1];
     }
-#line 1499 "parser.tab.c"
+#line 1496 "parser.tab.c"
     break;
 
   case 34: /* Exp: Var ATR Exp  */
-#line 229 "parser.y"
+#line 226 "parser.y"
                 {
         yyval = newStmtNode(AssignK);
         yyval->kind.stmt = AssignK;
@@ -1508,219 +1505,219 @@ yyreduce:
         yyval->child[0] = yyvsp[-2];
         yyval->child[1] = yyvsp[0];
     }
-#line 1512 "parser.tab.c"
+#line 1509 "parser.tab.c"
     break;
 
   case 35: /* Exp: SimplesExp  */
-#line 236 "parser.y"
+#line 233 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1518 "parser.tab.c"
+#line 1515 "parser.tab.c"
     break;
 
   case 36: /* Var: ID  */
-#line 240 "parser.y"
+#line 237 "parser.y"
        {
         yyval = newExpNode(IdK);
         yyval->lineno = lineno;
         yyval->attr.name = copyString(tokenID);
 
     }
-#line 1529 "parser.tab.c"
+#line 1526 "parser.tab.c"
     break;
 
   case 37: /* Var: ID ACO Exp FCO  */
-#line 245 "parser.y"
+#line 242 "parser.y"
                        {
         yyval = newExpNode(IdK);
         yyval->attr.name = yyvsp[-3]->attr.name;
         yyval->lineno = lineno;
         yyval->child[0] = yyvsp[-1];
     }
-#line 1540 "parser.tab.c"
+#line 1537 "parser.tab.c"
     break;
 
   case 38: /* SimplesExp: SomaExp Relacional SomaExp  */
-#line 254 "parser.y"
+#line 251 "parser.y"
                                {
         yyval = newStmtNode(AssignK);
         yyval = yyvsp[-1];
         yyval->child[0] = yyvsp[-2];
         yyval->child[1] = yyvsp[0];
     }
-#line 1551 "parser.tab.c"
+#line 1548 "parser.tab.c"
     break;
 
   case 39: /* SimplesExp: SomaExp  */
-#line 260 "parser.y"
+#line 257 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1557 "parser.tab.c"
+#line 1554 "parser.tab.c"
     break;
 
   case 40: /* Relacional: MEN  */
-#line 264 "parser.y"
+#line 261 "parser.y"
         {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1567 "parser.tab.c"
+#line 1564 "parser.tab.c"
     break;
 
   case 41: /* Relacional: MMI  */
-#line 268 "parser.y"
+#line 265 "parser.y"
             {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1577 "parser.tab.c"
+#line 1574 "parser.tab.c"
     break;
 
   case 42: /* Relacional: MIG  */
-#line 272 "parser.y"
+#line 269 "parser.y"
             {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1587 "parser.tab.c"
+#line 1584 "parser.tab.c"
     break;
 
   case 43: /* Relacional: MAI  */
-#line 276 "parser.y"
+#line 273 "parser.y"
             {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1597 "parser.tab.c"
+#line 1594 "parser.tab.c"
     break;
 
   case 44: /* Relacional: IGU  */
-#line 280 "parser.y"
+#line 277 "parser.y"
             {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1607 "parser.tab.c"
+#line 1604 "parser.tab.c"
     break;
 
   case 45: /* Relacional: DIF  */
-#line 284 "parser.y"
+#line 281 "parser.y"
              {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1617 "parser.tab.c"
+#line 1614 "parser.tab.c"
     break;
 
   case 46: /* SomaExp: SomaExp Soma Termo  */
-#line 292 "parser.y"
+#line 289 "parser.y"
                        {
         yyval = yyvsp[-1];
         yyval->lineno = lineno;
         yyval->child[0] = yyvsp[-2];
         yyval->child[1] = yyvsp[0];
     }
-#line 1628 "parser.tab.c"
+#line 1625 "parser.tab.c"
     break;
 
   case 47: /* SomaExp: Termo  */
-#line 297 "parser.y"
+#line 294 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1634 "parser.tab.c"
+#line 1631 "parser.tab.c"
     break;
 
   case 48: /* Soma: SOM  */
-#line 301 "parser.y"
+#line 298 "parser.y"
         {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1644 "parser.tab.c"
+#line 1641 "parser.tab.c"
     break;
 
   case 49: /* Soma: SUB  */
-#line 305 "parser.y"
+#line 302 "parser.y"
             {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1654 "parser.tab.c"
+#line 1651 "parser.tab.c"
     break;
 
   case 50: /* Termo: Termo Mult Fator  */
-#line 313 "parser.y"
+#line 310 "parser.y"
                      {
         yyval = yyvsp[-1];
         yyval->lineno = lineno;
         yyval->child[0] = yyvsp[-2];
         yyval->child[1] = yyvsp[0];
     }
-#line 1665 "parser.tab.c"
+#line 1662 "parser.tab.c"
     break;
 
   case 51: /* Termo: Fator  */
-#line 318 "parser.y"
+#line 315 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1671 "parser.tab.c"
+#line 1668 "parser.tab.c"
     break;
 
   case 52: /* Mult: MUL  */
-#line 322 "parser.y"
+#line 319 "parser.y"
         {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1681 "parser.tab.c"
+#line 1678 "parser.tab.c"
     break;
 
   case 53: /* Mult: DIV  */
-#line 326 "parser.y"
+#line 323 "parser.y"
             {
         yyval = newExpNode(OpK);
         yyval->attr.name = copyString(yytext);
         yyval->lineno = lineno;
     }
-#line 1691 "parser.tab.c"
+#line 1688 "parser.tab.c"
     break;
 
   case 54: /* Fator: APA Exp FPA  */
-#line 334 "parser.y"
+#line 331 "parser.y"
                 { yyval = yyvsp[-1]; }
-#line 1697 "parser.tab.c"
+#line 1694 "parser.tab.c"
     break;
 
   case 55: /* Fator: Var  */
-#line 335 "parser.y"
+#line 332 "parser.y"
           { yyval = yyvsp[0]; }
-#line 1703 "parser.tab.c"
+#line 1700 "parser.tab.c"
     break;
 
   case 56: /* Fator: Ativacao  */
-#line 336 "parser.y"
+#line 333 "parser.y"
                { yyval = yyvsp[0]; }
-#line 1709 "parser.tab.c"
+#line 1706 "parser.tab.c"
     break;
 
   case 57: /* Fator: NUM  */
-#line 337 "parser.y"
+#line 334 "parser.y"
           {
         yyval = newExpNode(ConstK);
         yyval->attr.name = copyString(yytext);
         yyval->attr.val = atoi(yytext);
         yyval->type = INT_TYPE;
     }
-#line 1720 "parser.tab.c"
+#line 1717 "parser.tab.c"
     break;
 
   case 58: /* Ativacao: funID APA ArgLista FPA  */
-#line 346 "parser.y"
+#line 343 "parser.y"
                            {
         yyval = newExpNode(AtivK);
         yyval->attr.name = yyvsp[-3]->attr.name;
@@ -1728,22 +1725,22 @@ yyreduce:
         yyval->lineno = lineno;
         yyval->child[0] = yyvsp[-1];
     }
-#line 1732 "parser.tab.c"
+#line 1729 "parser.tab.c"
     break;
 
   case 59: /* Ativacao: funID APA FPA  */
-#line 352 "parser.y"
+#line 349 "parser.y"
                       {
         yyval = newExpNode(AtivK);
         yyval->attr.name = yyvsp[-2]->attr.name;
         yyval->kind.exp = AtivK;
         yyval->lineno = lineno;
     }
-#line 1743 "parser.tab.c"
+#line 1740 "parser.tab.c"
     break;
 
   case 60: /* ArgLista: ArgLista VIR Exp  */
-#line 361 "parser.y"
+#line 358 "parser.y"
                      {
         YYSTYPE t = yyvsp[-2];
         if (t != NULL){
@@ -1754,17 +1751,17 @@ yyreduce:
         }
         else yyval = yyvsp[0];
     }
-#line 1758 "parser.tab.c"
+#line 1755 "parser.tab.c"
     break;
 
   case 61: /* ArgLista: Exp  */
-#line 370 "parser.y"
+#line 367 "parser.y"
             { yyval = yyvsp[0]; }
-#line 1764 "parser.tab.c"
+#line 1761 "parser.tab.c"
     break;
 
 
-#line 1768 "parser.tab.c"
+#line 1765 "parser.tab.c"
 
       default: break;
     }
@@ -1957,10 +1954,10 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 373 "parser.y"
+#line 370 "parser.y"
 
 
-// Função para tratamento de erros
+// Função para tratamento de erros sintaticos
 void yyerror(const char *s) {
     fprintf(stderr, "ERRO SINTÁTICO: '%s' LINHA: %d\n", yytext, lineno);
 }
