@@ -22,6 +22,8 @@
 #define TRUE 1
 #endif
 
+extern int lineno; // Contador de linhas no código fonte
+
 typedef int TokenType;
 
 // Tipo do noh da arvore

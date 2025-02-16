@@ -51,6 +51,7 @@ Decl:
     TipoEspec varID PEV {
         $$ = $2;
         $$->attr.name = $2->attr.name;
+        $$->lineno = lineno;
         $2->child[0] = $1;
     } | FunDecl { $$ = $1; }
 ;
@@ -80,6 +81,7 @@ FunDecl:
         $$ = newExpNode(FunDeclK);
         $$->kind.exp = FunDeclK;
         $$->attr.name = $2->attr.name;
+        $$->lineno = $2->lineno;
         $$->child[0] = $1;
         $$->child[1] = $4;
         $$->child[2] = $6;
@@ -91,6 +93,7 @@ funID:
         $$ = newExpNode(IdK);
         $$->attr.name = copyString(tokenID);
         $$->kind.exp = IdK;
+        $$->lineno = lineno;
     }
 ;
 
@@ -100,6 +103,7 @@ Params:
         $$ = newExpNode(TypeK);
         $$->attr.name = copyString(tokenID);
         $$->kind.exp = TypeK;
+        $$->lineno = lineno;
     }
 ;
 
@@ -120,11 +124,13 @@ Param:
         $$ = newExpNode(VarParamK);
         $$->attr.name = copyString(tokenID);
         $$->kind.exp = VarParamK;
+        $$->lineno = lineno;
         $$->child[0] = $1;
     } | TipoEspec ID ACO FCO {
         $$ = newExpNode(VetParamK);
         $$->attr.name = copyString(yytext);
         $$->kind.exp = VetParamK;
+        $$->lineno = lineno;
         $$->child[0] = $1;
     }
 ;
@@ -178,6 +184,7 @@ SelecaoDecl:
         $$ = newStmtNode(IfK);
         $$->attr.name = copyString(yytext);
         $$->kind.stmt = IfK;
+        $$->lineno = lineno;
         $$->child[0] = $3;
         $$->child[1] = $5;
         $$->child[2] = $7;
@@ -186,6 +193,7 @@ SelecaoDecl:
         $$ = newStmtNode(IfK);
         $$->attr.name = copyString(yytext);
         $$->kind.stmt = IfK;
+        $$->lineno = lineno;
         $$->child[0] = $3;
         $$->child[1] = $5;
     }
@@ -196,6 +204,7 @@ IteracaoDecl:
         $$ = newStmtNode(WhileK);
         $$->attr.name = copyString(yytext);
         $$->kind.stmt = WhileK;
+        $$->lineno = lineno;
         $$->child[0] = $3;
         $$->child[1] = $5;
     }
@@ -205,6 +214,7 @@ RetornoDecl:
     RETURN PEV { $$ = newStmtNode(ReturnVOID); }
     | RETURN Exp PEV {
         $$ = newStmtNode(ReturnINT);
+        $$->lineno = lineno;
         $$->child[0] = $2;
     }
 ;
@@ -214,6 +224,7 @@ Exp:
         $$ = newStmtNode(AssignK);
         $$->kind.stmt = AssignK;
         $$->attr.name= $1->attr.name;
+        $$->lineno = lineno;
         $$->child[0] = $1;
         $$->child[1] = $3;
     } | SimplesExp { $$ = $1; }
@@ -222,11 +233,13 @@ Exp:
 Var:
     ID {
         $$ = newExpNode(IdK);
+        $$->lineno = lineno;
         $$->attr.name = copyString(tokenID);
 
     } | ID ACO Exp FCO {
         $$ = newExpNode(IdK);
         $$->attr.name = $1->attr.name;
+        $$->lineno = lineno;
         $$->child[0] = $3;
     }
 ;
@@ -245,27 +258,34 @@ Relacional:
     MEN {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | MMI {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | MIG {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | MAI {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | IGU {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | DIF  {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     }
 ;
 
 SomaExp:
     SomaExp Soma Termo {
         $$ = $2;
+        $$->lineno = lineno;
         $$->child[0] = $1;
         $$->child[1] = $3;
     } | Termo { $$ = $1; }
@@ -275,15 +295,18 @@ Soma:
     SOM {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | SUB {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     }
 ;
 
 Termo:
     Termo Mult Fator {
         $$ = $2;
+        $$->lineno = lineno;
         $$->child[0] = $1;
         $$->child[1] = $3;
     } | Fator { $$ = $1; }
@@ -293,9 +316,11 @@ Mult:
     MUL {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     } | DIV {
         $$ = newExpNode(OpK);
         $$->attr.name = copyString(yytext);
+        $$->lineno = lineno;
     }
 ;
 
@@ -315,11 +340,13 @@ Ativacao:
         $$ = newExpNode(AtivK);
         $$->attr.name = $1->attr.name;
         $$->kind.exp = AtivK;
+        $$->lineno = lineno;
         $$->child[0] = $3;
     } | funID APA FPA {
         $$ = newExpNode(AtivK);
         $$->attr.name = $1->attr.name;
         $$->kind.exp = AtivK;
+        $$->lineno = lineno;
     }
 ;
 
@@ -340,7 +367,7 @@ ArgLista:
 
 // Função para tratamento de erros
 void yyerror(const char *s) {
-    fprintf(stderr, "ERRO SINTÁTICO: '%s' LINHA: %d\n", yytext, yylineno);
+    fprintf(stderr, "ERRO SINTÁTICO: '%s' LINHA: %d\n", yytext, lineno);
 }
 
 int main(int argc, char *argv[]) {

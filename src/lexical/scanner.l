@@ -12,6 +12,7 @@
 
 NUM [0-9]+
 ID [a-zA-Z][a-zA-Z0-9]*
+newline \n
 
 %option yylineno
 
@@ -21,7 +22,7 @@ ID [a-zA-Z][a-zA-Z0-9]*
 "if" { return IF; }
 "int" { return INT; }
 "return" { return RETURN; }
-"void" { strncpy(tokenID, yytext, MAXTOKENLEN); return VOID; }
+"void" { return VOID; }
 "while" { return WHILE; }
 
 "+" { return SOM; }
@@ -50,7 +51,8 @@ ID [a-zA-Z][a-zA-Z0-9]*
     return ID;
 }
 
-[ \t\n]+ ;  // Ignorar espaços, tabs e quebras de linha
+{newline} { lineno++; }
+[ \t]+ ;  // Ignorar espaços e tabs
 
 . {
     printf("ERRO LÉXICO: '%s' LINHA: %d\n", yytext, yylineno);  // Exibe o token inválido

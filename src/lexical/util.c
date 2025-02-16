@@ -7,6 +7,7 @@
 
 static int indentno = 0;
 
+int lineno = 1;  // Definição única da variável
 
 /* Function newStmtNode creates a new statement
  * node for syntax tree construction
@@ -154,6 +155,7 @@ void printTree(TreeNode *tree) {
     int i;
     INDENT;
     while (tree != NULL) {
+        printf(" %d", tree->lineno);
         printSpaces();
         if (tree->nodekind == StmtK) {
             switch (tree->kind.stmt) {
@@ -216,7 +218,7 @@ void printTree(TreeNode *tree) {
         } else {
             printf( "Unknown Node kind\n");
         }
-        
+
         for (i = 0; i < MAXCHILDREN; i++) {
             printTree(tree->child[i]);
         }
