@@ -1,0 +1,12 @@
+void erroLexico(void) {
+    int a;
+    int b;?
+    input();
+    b = load(100);
+    loadStack(b);
+}
+
+int main(void) {
+    printPC();
+    return 0;
+}
