@@ -1,7 +1,6 @@
 #include "globals.h"
 #include "util.h"
 
-
 #define INDENT indentno += 2
 #define UNINDENT indentno -= 2
 

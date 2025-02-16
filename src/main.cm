@@ -1,23 +1,4 @@
-void savePC(void) {
+void savePC(int c) {
     int a;
     int b;
-    input();
-    b = load(100);
-    loadStack(b);
-}
-
-void printPC(void) {
-    int a;
-    int b;
-    input();
-    a = 1;
-    saveStack(a);
-    b = load(a);
-    output(b);
-    savePC();
-}
-
-int main(void) {
-    printPC();
-    return 0;
 }
