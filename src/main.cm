@@ -1,4 +1,0 @@
-void savePC(int c) {
-    int a;
-    int b;
-}

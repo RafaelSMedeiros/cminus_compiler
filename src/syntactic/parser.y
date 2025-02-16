@@ -260,27 +260,27 @@ SimplesExp:
 Relacional:
     MEN {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = MEN;
         $$->lineno = lineno;
     } | MMI {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = MMI;
         $$->lineno = lineno;
     } | MIG {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = MIG;
         $$->lineno = lineno;
     } | MAI {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = MAI;
         $$->lineno = lineno;
     } | IGU {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = IGU;
         $$->lineno = lineno;
     } | DIF  {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = DIF;
         $$->lineno = lineno;
     }
 ;
@@ -297,11 +297,11 @@ SomaExp:
 Soma:
     SOM {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = SOM;
         $$->lineno = lineno;
     } | SUB {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = SUB;
         $$->lineno = lineno;
     }
 ;
@@ -318,11 +318,11 @@ Termo:
 Mult:
     MUL {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = MUL;
         $$->lineno = lineno;
     } | DIV {
         $$ = newExpNode(OpK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.op = DIV;
         $$->lineno = lineno;
     }
 ;

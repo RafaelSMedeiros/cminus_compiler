@@ -30,8 +30,8 @@ newline \n
 "/" { return DIV; }
 "<" { return MEN; }
 "<=" { return MMI; }
-">" { return MIG; }
-">=" { return MAI; }
+">=" { return MIG; }
+">" { return MAI; }
 "==" { return IGU; }
 "!=" { return DIF; }
 "=" { return ATR; }

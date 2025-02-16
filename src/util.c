@@ -54,6 +54,9 @@ void printToken(TokenType token, const char *tokenString)
     case MUL:
         printf("*\n");
         break;
+    case DIV:
+        printf("/\n");
+        break;
     case MEN:
         printf("<\n");
         break;
