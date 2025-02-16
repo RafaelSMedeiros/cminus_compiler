@@ -27,4 +27,13 @@ char * copyString( char * );
  */
 void printTree( TreeNode * );
 
+void buildSymtab(TreeNode *);
+
+void st_insert( char * name, int lineno);
+
+int st_lookup ( char * name );
+
+void printSymTab();
+
+
 #endif

@@ -1981,6 +1981,8 @@ int main(int argc, char *argv[]) {
     if (parse_result == 0) {
         printf("Análise sintática bem-sucedida! A sintaxe está correta.\n");
         printTree(arvoreSintatica);
+        printf("\n");
+        buildSymtab(arvoreSintatica);
     } else {
         printf("Erro na análise sintática.\n");
     }
