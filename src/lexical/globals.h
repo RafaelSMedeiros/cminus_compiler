@@ -56,8 +56,12 @@ typedef enum {
     VetParamK // Declaração de vetro parâmetro.
 } ExpKind;
 
-/* ExpType is used for type checking */
-typedef enum {Void,Integer,Boolean} ExpType;
+// Tipo de dados
+typedef enum {
+    INT_TYPE,
+    VOID_TYPE,
+    NULL_TYPE
+} DataTypes;
 
 #define MAXCHILDREN 3
 typedef struct treeNode {
@@ -76,7 +80,7 @@ typedef struct treeNode {
              char * name; 
     } attr;
     
-    // ExpType type; /* for type checking of exps */
+    DataTypes type;
 } TreeNode;
 
 #endif

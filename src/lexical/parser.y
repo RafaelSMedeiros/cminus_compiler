@@ -332,6 +332,7 @@ Fator:
         $$ = newExpNode(ConstK);
         $$->attr.name = copyString(yytext);
         $$->attr.val = atoi(yytext);
+        $$->type = INTTYPE
     }
 ;
 
