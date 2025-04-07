@@ -44,6 +44,19 @@ newline \n
 "{" { return ACH; }
 "}" { return FCH; }
 
+"/*" {
+    char c;
+    while(1) {
+        c = yyinput();
+        if (c == '\n') lineno++;;
+        if (c == EOF) break;
+        if (c == '*') {
+            c = yyinput();
+            if(c == '/') break;
+        }
+    }
+}
+
 {NUM} { return NUM; }
 {ID} {
     strncpy(tokenID, yytext, MAXTOKENLEN);  // Aqui o Flex preenche tokenID
