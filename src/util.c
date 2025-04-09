@@ -219,7 +219,7 @@ void printTree(TreeNode *tree) // Função para imprimir a árvore sintática
                 printf("Parametro: %s\n", tree->attr.name);
                 break;
             case VetorK:
-                printf("Vetor: %s", tree->attr.name);
+                printf("Vetor: %s\n", tree->attr.name);
                 break;
             default:
                 printf("Unknown ExpNode kind: %d\n", tree->nodekind);

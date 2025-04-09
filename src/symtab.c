@@ -58,11 +58,9 @@ static void insertNode(TreeNode *t) // Função para inserir um nó na tabela de
         switch (t->kind.stmt) // Verifica o tipo de declaração
         {
         case ReturnINT: // Se for um retorno de inteiro
-            st_insert("return", t->lineno, t->type, RETT, escopo);
             break;
 
         case ReturnVOID: // Se for um retorno de void
-            st_insert("return", t->lineno, t->type, RETT, escopo);
             break;
 
         default:

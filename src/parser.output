@@ -1,0 +1,1359 @@
+State 103 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: Programa $end
+
+    1 Programa: DeclLista
+
+    2 DeclLista: DeclLista Decl
+    3          | ε
+    4          | error PEV
+
+    5 Decl: VarDecl
+    6     | FunDecl
+
+    7 VarDecl: TipoEspec varID PEV
+    8        | TipoEspec vetID ACO tam FCO PEV
+
+    9 varID: ID
+
+   10 vetID: ID
+
+   11 tam: NUM
+
+   12 TipoEspec: INT
+   13          | VOID
+
+   14 FunDecl: TipoEspec funID APA Params FPA CompostoDecl
+
+   15 funID: ID
+
+   16 Params: ParamLista
+   17       | VOID
+
+   18 ParamLista: ParamLista VIR Param
+   19           | Param
+
+   20 Param: TipoEspec ID
+   21      | TipoEspec vetID ACO FCO
+
+   22 CompostoDecl: ACH LocalDecl ComandoLista FCH
+
+   23 LocalDecl: DeclLista
+
+   24 ComandoLista: ComandoLista Comando
+   25             | ε
+
+   26 Comando: ExpDecl
+   27        | CompostoDecl
+   28        | SelecaoDecl
+   29        | IteracaoDecl
+   30        | RetornoDecl
+
+   31 ExpDecl: Exp PEV
+   32        | PEV
+
+   33 SelecaoDecl: IF APA Exp FPA Comando ELSE Comando
+   34            | IF APA Exp FPA Comando
+
+   35 IteracaoDecl: WHILE APA Exp FPA Comando
+
+   36 RetornoDecl: RETURN PEV
+   37            | RETURN Exp PEV
+
+   38 Exp: Var ATR Exp
+   39    | SimplesExp
+
+   40 Var: ID
+   41    | vetID ACO Exp FCO
+
+   42 SimplesExp: SomaExp Relacional SomaExp
+   43           | SomaExp
+
+   44 Relacional: MEN
+   45           | MMI
+   46           | MIG
+   47           | MAI
+   48           | IGU
+   49           | DIF
+
+   50 SomaExp: SomaExp Soma Termo
+   51        | Termo
+
+   52 Soma: SOM
+   53     | SUB
+
+   54 Termo: Termo Mult Fator
+   55      | Fator
+
+   56 Mult: MUL
+   57     | DIV
+
+   58 Fator: APA Exp FPA
+   59      | Var
+   60      | Ativacao
+   61      | NUM
+
+   62 Ativacao: funID APA ArgLista FPA
+   63         | funID APA FPA
+
+   64 ArgLista: ArgLista VIR Exp
+   65         | Exp
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256) 4
+    NUM (258) 11 61
+    ID (259) 9 10 15 20 40
+    ELSE (260) 33
+    IF (261) 33 34
+    INT (262) 12
+    RETURN (263) 36 37
+    VOID (264) 13 17
+    WHILE (265) 35
+    SOM (266) 52
+    SUB (267) 53
+    MUL (268) 56
+    DIV (269) 57
+    MEN (270) 44
+    MMI (271) 45
+    MIG (272) 46
+    MAI (273) 47
+    IGU (274) 48
+    DIF (275) 49
+    ATR (276) 38
+    PEV (277) 4 7 8 31 32 36 37
+    VIR (278) 18 64
+    APA (279) 14 33 34 35 58 62 63
+    FPA (280) 14 33 34 35 58 62 63
+    ACO (281) 8 21 41
+    FCO (282) 8 21 41
+    ACH (283) 22
+    FCH (284) 22
+    IFX (285)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (31)
+        on left: 0
+    Programa (32)
+        on left: 1
+        on right: 0
+    DeclLista (33)
+        on left: 2 3 4
+        on right: 1 2 23
+    Decl (34)
+        on left: 5 6
+        on right: 2
+    VarDecl (35)
+        on left: 7 8
+        on right: 5
+    varID (36)
+        on left: 9
+        on right: 7
+    vetID (37)
+        on left: 10
+        on right: 8 21 41
+    tam (38)
+        on left: 11
+        on right: 8
+    TipoEspec (39)
+        on left: 12 13
+        on right: 7 8 14 20 21
+    FunDecl (40)
+        on left: 14
+        on right: 6
+    funID (41)
+        on left: 15
+        on right: 14 62 63
+    Params (42)
+        on left: 16 17
+        on right: 14
+    ParamLista (43)
+        on left: 18 19
+        on right: 16 18
+    Param (44)
+        on left: 20 21
+        on right: 18 19
+    CompostoDecl (45)
+        on left: 22
+        on right: 14 27
+    LocalDecl (46)
+        on left: 23
+        on right: 22
+    ComandoLista (47)
+        on left: 24 25
+        on right: 22 24
+    Comando (48)
+        on left: 26 27 28 29 30
+        on right: 24 33 34 35
+    ExpDecl (49)
+        on left: 31 32
+        on right: 26
+    SelecaoDecl (50)
+        on left: 33 34
+        on right: 28
+    IteracaoDecl (51)
+        on left: 35
+        on right: 29
+    RetornoDecl (52)
+        on left: 36 37
+        on right: 30
+    Exp (53)
+        on left: 38 39
+        on right: 31 33 34 35 37 38 41 58 64 65
+    Var (54)
+        on left: 40 41
+        on right: 38 59
+    SimplesExp (55)
+        on left: 42 43
+        on right: 39
+    Relacional (56)
+        on left: 44 45 46 47 48 49
+        on right: 42
+    SomaExp (57)
+        on left: 50 51
+        on right: 42 43 50
+    Soma (58)
+        on left: 52 53
+        on right: 50
+    Termo (59)
+        on left: 54 55
+        on right: 50 51 54
+    Mult (60)
+        on left: 56 57
+        on right: 54
+    Fator (61)
+        on left: 58 59 60 61
+        on right: 54 55
+    Ativacao (62)
+        on left: 62 63
+        on right: 60
+    ArgLista (63)
+        on left: 64 65
+        on right: 62 64
+
+
+State 0
+
+    0 $accept: • Programa $end
+
+    error  shift, and go to state 1
+
+    $end  reduce using rule 3 (DeclLista)
+    INT   reduce using rule 3 (DeclLista)
+    VOID  reduce using rule 3 (DeclLista)
+
+    Programa   go to state 2
+    DeclLista  go to state 3
+
+
+State 1
+
+    4 DeclLista: error • PEV
+
+    PEV  shift, and go to state 4
+
+
+State 2
+
+    0 $accept: Programa • $end
+
+    $end  shift, and go to state 5
+
+
+State 3
+
+    1 Programa: DeclLista •
+    2 DeclLista: DeclLista • Decl
+
+    INT   shift, and go to state 6
+    VOID  shift, and go to state 7
+
+    $default  reduce using rule 1 (Programa)
+
+    Decl       go to state 8
+    VarDecl    go to state 9
+    TipoEspec  go to state 10
+    FunDecl    go to state 11
+
+
+State 4
+
+    4 DeclLista: error PEV •
+
+    $default  reduce using rule 4 (DeclLista)
+
+
+State 5
+
+    0 $accept: Programa $end •
+
+    $default  accept
+
+
+State 6
+
+   12 TipoEspec: INT •
+
+    $default  reduce using rule 12 (TipoEspec)
+
+
+State 7
+
+   13 TipoEspec: VOID •
+
+    $default  reduce using rule 13 (TipoEspec)
+
+
+State 8
+
+    2 DeclLista: DeclLista Decl •
+
+    $default  reduce using rule 2 (DeclLista)
+
+
+State 9
+
+    5 Decl: VarDecl •
+
+    $default  reduce using rule 5 (Decl)
+
+
+State 10
+
+    7 VarDecl: TipoEspec • varID PEV
+    8        | TipoEspec • vetID ACO tam FCO PEV
+   14 FunDecl: TipoEspec • funID APA Params FPA CompostoDecl
+
+    ID  shift, and go to state 12
+
+    varID  go to state 13
+    vetID  go to state 14
+    funID  go to state 15
+
+
+State 11
+
+    6 Decl: FunDecl •
+
+    $default  reduce using rule 6 (Decl)
+
+
+State 12
+
+    9 varID: ID •
+   10 vetID: ID •
+   15 funID: ID •
+
+    APA       reduce using rule 15 (funID)
+    ACO       reduce using rule 10 (vetID)
+    $default  reduce using rule 9 (varID)
+
+
+State 13
+
+    7 VarDecl: TipoEspec varID • PEV
+
+    PEV  shift, and go to state 16
+
+
+State 14
+
+    8 VarDecl: TipoEspec vetID • ACO tam FCO PEV
+
+    ACO  shift, and go to state 17
+
+
+State 15
+
+   14 FunDecl: TipoEspec funID • APA Params FPA CompostoDecl
+
+    APA  shift, and go to state 18
+
+
+State 16
+
+    7 VarDecl: TipoEspec varID PEV •
+
+    $default  reduce using rule 7 (VarDecl)
+
+
+State 17
+
+    8 VarDecl: TipoEspec vetID ACO • tam FCO PEV
+
+    NUM  shift, and go to state 19
+
+    tam  go to state 20
+
+
+State 18
+
+   14 FunDecl: TipoEspec funID APA • Params FPA CompostoDecl
+
+    INT   shift, and go to state 6
+    VOID  shift, and go to state 21
+
+    TipoEspec   go to state 22
+    Params      go to state 23
+    ParamLista  go to state 24
+    Param       go to state 25
+
+
+State 19
+
+   11 tam: NUM •
+
+    $default  reduce using rule 11 (tam)
+
+
+State 20
+
+    8 VarDecl: TipoEspec vetID ACO tam • FCO PEV
+
+    FCO  shift, and go to state 26
+
+
+State 21
+
+   13 TipoEspec: VOID •
+   17 Params: VOID •
+
+    FPA       reduce using rule 17 (Params)
+    $default  reduce using rule 13 (TipoEspec)
+
+
+State 22
+
+   20 Param: TipoEspec • ID
+   21      | TipoEspec • vetID ACO FCO
+
+    ID  shift, and go to state 27
+
+    vetID  go to state 28
+
+
+State 23
+
+   14 FunDecl: TipoEspec funID APA Params • FPA CompostoDecl
+
+    FPA  shift, and go to state 29
+
+
+State 24
+
+   16 Params: ParamLista •
+   18 ParamLista: ParamLista • VIR Param
+
+    VIR  shift, and go to state 30
+
+    $default  reduce using rule 16 (Params)
+
+
+State 25
+
+   19 ParamLista: Param •
+
+    $default  reduce using rule 19 (ParamLista)
+
+
+State 26
+
+    8 VarDecl: TipoEspec vetID ACO tam FCO • PEV
+
+    PEV  shift, and go to state 31
+
+
+State 27
+
+   10 vetID: ID •
+   20 Param: TipoEspec ID •
+
+    ACO       reduce using rule 10 (vetID)
+    $default  reduce using rule 20 (Param)
+
+
+State 28
+
+   21 Param: TipoEspec vetID • ACO FCO
+
+    ACO  shift, and go to state 32
+
+
+State 29
+
+   14 FunDecl: TipoEspec funID APA Params FPA • CompostoDecl
+
+    ACH  shift, and go to state 33
+
+    CompostoDecl  go to state 34
+
+
+State 30
+
+   18 ParamLista: ParamLista VIR • Param
+
+    INT   shift, and go to state 6
+    VOID  shift, and go to state 7
+
+    TipoEspec  go to state 22
+    Param      go to state 35
+
+
+State 31
+
+    8 VarDecl: TipoEspec vetID ACO tam FCO PEV •
+
+    $default  reduce using rule 8 (VarDecl)
+
+
+State 32
+
+   21 Param: TipoEspec vetID ACO • FCO
+
+    FCO  shift, and go to state 36
+
+
+State 33
+
+   22 CompostoDecl: ACH • LocalDecl ComandoLista FCH
+
+    error  shift, and go to state 1
+
+    NUM     reduce using rule 3 (DeclLista)
+    ID      reduce using rule 3 (DeclLista)
+    IF      reduce using rule 3 (DeclLista)
+    INT     reduce using rule 3 (DeclLista)
+    RETURN  reduce using rule 3 (DeclLista)
+    VOID    reduce using rule 3 (DeclLista)
+    WHILE   reduce using rule 3 (DeclLista)
+    PEV     reduce using rule 3 (DeclLista)
+    APA     reduce using rule 3 (DeclLista)
+    ACH     reduce using rule 3 (DeclLista)
+    FCH     reduce using rule 3 (DeclLista)
+
+    DeclLista  go to state 37
+    LocalDecl  go to state 38
+
+
+State 34
+
+   14 FunDecl: TipoEspec funID APA Params FPA CompostoDecl •
+
+    $default  reduce using rule 14 (FunDecl)
+
+
+State 35
+
+   18 ParamLista: ParamLista VIR Param •
+
+    $default  reduce using rule 18 (ParamLista)
+
+
+State 36
+
+   21 Param: TipoEspec vetID ACO FCO •
+
+    $default  reduce using rule 21 (Param)
+
+
+State 37
+
+    2 DeclLista: DeclLista • Decl
+   23 LocalDecl: DeclLista •
+
+    INT   shift, and go to state 6
+    VOID  shift, and go to state 7
+
+    $default  reduce using rule 23 (LocalDecl)
+
+    Decl       go to state 8
+    VarDecl    go to state 9
+    TipoEspec  go to state 10
+    FunDecl    go to state 11
+
+
+State 38
+
+   22 CompostoDecl: ACH LocalDecl • ComandoLista FCH
+
+    $default  reduce using rule 25 (ComandoLista)
+
+    ComandoLista  go to state 39
+
+
+State 39
+
+   22 CompostoDecl: ACH LocalDecl ComandoLista • FCH
+   24 ComandoLista: ComandoLista • Comando
+
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    IF      shift, and go to state 42
+    RETURN  shift, and go to state 43
+    WHILE   shift, and go to state 44
+    PEV     shift, and go to state 45
+    APA     shift, and go to state 46
+    ACH     shift, and go to state 33
+    FCH     shift, and go to state 47
+
+    vetID         go to state 48
+    funID         go to state 49
+    CompostoDecl  go to state 50
+    Comando       go to state 51
+    ExpDecl       go to state 52
+    SelecaoDecl   go to state 53
+    IteracaoDecl  go to state 54
+    RetornoDecl   go to state 55
+    Exp           go to state 56
+    Var           go to state 57
+    SimplesExp    go to state 58
+    SomaExp       go to state 59
+    Termo         go to state 60
+    Fator         go to state 61
+    Ativacao      go to state 62
+
+
+State 40
+
+   61 Fator: NUM •
+
+    $default  reduce using rule 61 (Fator)
+
+
+State 41
+
+   10 vetID: ID •
+   15 funID: ID •
+   40 Var: ID •
+
+    APA       reduce using rule 15 (funID)
+    ACO       reduce using rule 10 (vetID)
+    $default  reduce using rule 40 (Var)
+
+
+State 42
+
+   33 SelecaoDecl: IF • APA Exp FPA Comando ELSE Comando
+   34            | IF • APA Exp FPA Comando
+
+    APA  shift, and go to state 63
+
+
+State 43
+
+   36 RetornoDecl: RETURN • PEV
+   37            | RETURN • Exp PEV
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    PEV  shift, and go to state 64
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 65
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 44
+
+   35 IteracaoDecl: WHILE • APA Exp FPA Comando
+
+    APA  shift, and go to state 66
+
+
+State 45
+
+   32 ExpDecl: PEV •
+
+    $default  reduce using rule 32 (ExpDecl)
+
+
+State 46
+
+   58 Fator: APA • Exp FPA
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 67
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 47
+
+   22 CompostoDecl: ACH LocalDecl ComandoLista FCH •
+
+    $default  reduce using rule 22 (CompostoDecl)
+
+
+State 48
+
+   41 Var: vetID • ACO Exp FCO
+
+    ACO  shift, and go to state 68
+
+
+State 49
+
+   62 Ativacao: funID • APA ArgLista FPA
+   63         | funID • APA FPA
+
+    APA  shift, and go to state 69
+
+
+State 50
+
+   27 Comando: CompostoDecl •
+
+    $default  reduce using rule 27 (Comando)
+
+
+State 51
+
+   24 ComandoLista: ComandoLista Comando •
+
+    $default  reduce using rule 24 (ComandoLista)
+
+
+State 52
+
+   26 Comando: ExpDecl •
+
+    $default  reduce using rule 26 (Comando)
+
+
+State 53
+
+   28 Comando: SelecaoDecl •
+
+    $default  reduce using rule 28 (Comando)
+
+
+State 54
+
+   29 Comando: IteracaoDecl •
+
+    $default  reduce using rule 29 (Comando)
+
+
+State 55
+
+   30 Comando: RetornoDecl •
+
+    $default  reduce using rule 30 (Comando)
+
+
+State 56
+
+   31 ExpDecl: Exp • PEV
+
+    PEV  shift, and go to state 70
+
+
+State 57
+
+   38 Exp: Var • ATR Exp
+   59 Fator: Var •
+
+    ATR  shift, and go to state 71
+
+    $default  reduce using rule 59 (Fator)
+
+
+State 58
+
+   39 Exp: SimplesExp •
+
+    $default  reduce using rule 39 (Exp)
+
+
+State 59
+
+   42 SimplesExp: SomaExp • Relacional SomaExp
+   43           | SomaExp •
+   50 SomaExp: SomaExp • Soma Termo
+
+    SOM  shift, and go to state 72
+    SUB  shift, and go to state 73
+    MEN  shift, and go to state 74
+    MMI  shift, and go to state 75
+    MIG  shift, and go to state 76
+    MAI  shift, and go to state 77
+    IGU  shift, and go to state 78
+    DIF  shift, and go to state 79
+
+    $default  reduce using rule 43 (SimplesExp)
+
+    Relacional  go to state 80
+    Soma        go to state 81
+
+
+State 60
+
+   51 SomaExp: Termo •
+   54 Termo: Termo • Mult Fator
+
+    MUL  shift, and go to state 82
+    DIV  shift, and go to state 83
+
+    $default  reduce using rule 51 (SomaExp)
+
+    Mult  go to state 84
+
+
+State 61
+
+   55 Termo: Fator •
+
+    $default  reduce using rule 55 (Termo)
+
+
+State 62
+
+   60 Fator: Ativacao •
+
+    $default  reduce using rule 60 (Fator)
+
+
+State 63
+
+   33 SelecaoDecl: IF APA • Exp FPA Comando ELSE Comando
+   34            | IF APA • Exp FPA Comando
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 85
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 64
+
+   36 RetornoDecl: RETURN PEV •
+
+    $default  reduce using rule 36 (RetornoDecl)
+
+
+State 65
+
+   37 RetornoDecl: RETURN Exp • PEV
+
+    PEV  shift, and go to state 86
+
+
+State 66
+
+   35 IteracaoDecl: WHILE APA • Exp FPA Comando
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 87
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 67
+
+   58 Fator: APA Exp • FPA
+
+    FPA  shift, and go to state 88
+
+
+State 68
+
+   41 Var: vetID ACO • Exp FCO
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 89
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 69
+
+   62 Ativacao: funID APA • ArgLista FPA
+   63         | funID APA • FPA
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+    FPA  shift, and go to state 90
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 91
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+    ArgLista    go to state 92
+
+
+State 70
+
+   31 ExpDecl: Exp PEV •
+
+    $default  reduce using rule 31 (ExpDecl)
+
+
+State 71
+
+   38 Exp: Var ATR • Exp
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 93
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 72
+
+   52 Soma: SOM •
+
+    $default  reduce using rule 52 (Soma)
+
+
+State 73
+
+   53 Soma: SUB •
+
+    $default  reduce using rule 53 (Soma)
+
+
+State 74
+
+   44 Relacional: MEN •
+
+    $default  reduce using rule 44 (Relacional)
+
+
+State 75
+
+   45 Relacional: MMI •
+
+    $default  reduce using rule 45 (Relacional)
+
+
+State 76
+
+   46 Relacional: MIG •
+
+    $default  reduce using rule 46 (Relacional)
+
+
+State 77
+
+   47 Relacional: MAI •
+
+    $default  reduce using rule 47 (Relacional)
+
+
+State 78
+
+   48 Relacional: IGU •
+
+    $default  reduce using rule 48 (Relacional)
+
+
+State 79
+
+   49 Relacional: DIF •
+
+    $default  reduce using rule 49 (Relacional)
+
+
+State 80
+
+   42 SimplesExp: SomaExp Relacional • SomaExp
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID     go to state 48
+    funID     go to state 49
+    Var       go to state 94
+    SomaExp   go to state 95
+    Termo     go to state 60
+    Fator     go to state 61
+    Ativacao  go to state 62
+
+
+State 81
+
+   50 SomaExp: SomaExp Soma • Termo
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID     go to state 48
+    funID     go to state 49
+    Var       go to state 94
+    Termo     go to state 96
+    Fator     go to state 61
+    Ativacao  go to state 62
+
+
+State 82
+
+   56 Mult: MUL •
+
+    $default  reduce using rule 56 (Mult)
+
+
+State 83
+
+   57 Mult: DIV •
+
+    $default  reduce using rule 57 (Mult)
+
+
+State 84
+
+   54 Termo: Termo Mult • Fator
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID     go to state 48
+    funID     go to state 49
+    Var       go to state 94
+    Fator     go to state 97
+    Ativacao  go to state 62
+
+
+State 85
+
+   33 SelecaoDecl: IF APA Exp • FPA Comando ELSE Comando
+   34            | IF APA Exp • FPA Comando
+
+    FPA  shift, and go to state 98
+
+
+State 86
+
+   37 RetornoDecl: RETURN Exp PEV •
+
+    $default  reduce using rule 37 (RetornoDecl)
+
+
+State 87
+
+   35 IteracaoDecl: WHILE APA Exp • FPA Comando
+
+    FPA  shift, and go to state 99
+
+
+State 88
+
+   58 Fator: APA Exp FPA •
+
+    $default  reduce using rule 58 (Fator)
+
+
+State 89
+
+   41 Var: vetID ACO Exp • FCO
+
+    FCO  shift, and go to state 100
+
+
+State 90
+
+   63 Ativacao: funID APA FPA •
+
+    $default  reduce using rule 63 (Ativacao)
+
+
+State 91
+
+   65 ArgLista: Exp •
+
+    $default  reduce using rule 65 (ArgLista)
+
+
+State 92
+
+   62 Ativacao: funID APA ArgLista • FPA
+   64 ArgLista: ArgLista • VIR Exp
+
+    VIR  shift, and go to state 101
+    FPA  shift, and go to state 102
+
+
+State 93
+
+   38 Exp: Var ATR Exp •
+
+    $default  reduce using rule 38 (Exp)
+
+
+State 94
+
+   59 Fator: Var •
+
+    $default  reduce using rule 59 (Fator)
+
+
+State 95
+
+   42 SimplesExp: SomaExp Relacional SomaExp •
+   50 SomaExp: SomaExp • Soma Termo
+
+    SOM  shift, and go to state 72
+    SUB  shift, and go to state 73
+
+    $default  reduce using rule 42 (SimplesExp)
+
+    Soma  go to state 81
+
+
+State 96
+
+   50 SomaExp: SomaExp Soma Termo •
+   54 Termo: Termo • Mult Fator
+
+    MUL  shift, and go to state 82
+    DIV  shift, and go to state 83
+
+    $default  reduce using rule 50 (SomaExp)
+
+    Mult  go to state 84
+
+
+State 97
+
+   54 Termo: Termo Mult Fator •
+
+    $default  reduce using rule 54 (Termo)
+
+
+State 98
+
+   33 SelecaoDecl: IF APA Exp FPA • Comando ELSE Comando
+   34            | IF APA Exp FPA • Comando
+
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    IF      shift, and go to state 42
+    RETURN  shift, and go to state 43
+    WHILE   shift, and go to state 44
+    PEV     shift, and go to state 45
+    APA     shift, and go to state 46
+    ACH     shift, and go to state 33
+
+    vetID         go to state 48
+    funID         go to state 49
+    CompostoDecl  go to state 50
+    Comando       go to state 103
+    ExpDecl       go to state 52
+    SelecaoDecl   go to state 53
+    IteracaoDecl  go to state 54
+    RetornoDecl   go to state 55
+    Exp           go to state 56
+    Var           go to state 57
+    SimplesExp    go to state 58
+    SomaExp       go to state 59
+    Termo         go to state 60
+    Fator         go to state 61
+    Ativacao      go to state 62
+
+
+State 99
+
+   35 IteracaoDecl: WHILE APA Exp FPA • Comando
+
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    IF      shift, and go to state 42
+    RETURN  shift, and go to state 43
+    WHILE   shift, and go to state 44
+    PEV     shift, and go to state 45
+    APA     shift, and go to state 46
+    ACH     shift, and go to state 33
+
+    vetID         go to state 48
+    funID         go to state 49
+    CompostoDecl  go to state 50
+    Comando       go to state 104
+    ExpDecl       go to state 52
+    SelecaoDecl   go to state 53
+    IteracaoDecl  go to state 54
+    RetornoDecl   go to state 55
+    Exp           go to state 56
+    Var           go to state 57
+    SimplesExp    go to state 58
+    SomaExp       go to state 59
+    Termo         go to state 60
+    Fator         go to state 61
+    Ativacao      go to state 62
+
+
+State 100
+
+   41 Var: vetID ACO Exp FCO •
+
+    $default  reduce using rule 41 (Var)
+
+
+State 101
+
+   64 ArgLista: ArgLista VIR • Exp
+
+    NUM  shift, and go to state 40
+    ID   shift, and go to state 41
+    APA  shift, and go to state 46
+
+    vetID       go to state 48
+    funID       go to state 49
+    Exp         go to state 105
+    Var         go to state 57
+    SimplesExp  go to state 58
+    SomaExp     go to state 59
+    Termo       go to state 60
+    Fator       go to state 61
+    Ativacao    go to state 62
+
+
+State 102
+
+   62 Ativacao: funID APA ArgLista FPA •
+
+    $default  reduce using rule 62 (Ativacao)
+
+
+State 103
+
+   33 SelecaoDecl: IF APA Exp FPA Comando • ELSE Comando
+   34            | IF APA Exp FPA Comando •
+
+    ELSE  shift, and go to state 106
+
+    ELSE      [reduce using rule 34 (SelecaoDecl)]
+    $default  reduce using rule 34 (SelecaoDecl)
+
+    shift/reduce conflict on token ELSE:
+       34 SelecaoDecl: IF APA Exp FPA Comando •
+       33 SelecaoDecl: IF APA Exp FPA Comando • ELSE Comando
+      Example: IF APA Exp FPA IF APA Exp FPA Comando • ELSE Comando
+      Shift derivation
+        SelecaoDecl
+        ↳ 34: IF APA Exp FPA Comando
+                             ↳ 28: SelecaoDecl
+                                   ↳ 33: IF APA Exp FPA Comando • ELSE Comando
+      Reduce derivation
+        SelecaoDecl
+        ↳ 33: IF APA Exp FPA Comando                              ELSE Comando
+                             ↳ 28: SelecaoDecl
+                                   ↳ 34: IF APA Exp FPA Comando •
+
+
+
+State 104
+
+   35 IteracaoDecl: WHILE APA Exp FPA Comando •
+
+    $default  reduce using rule 35 (IteracaoDecl)
+
+
+State 105
+
+   64 ArgLista: ArgLista VIR Exp •
+
+    $default  reduce using rule 64 (ArgLista)
+
+
+State 106
+
+   33 SelecaoDecl: IF APA Exp FPA Comando ELSE • Comando
+
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    IF      shift, and go to state 42
+    RETURN  shift, and go to state 43
+    WHILE   shift, and go to state 44
+    PEV     shift, and go to state 45
+    APA     shift, and go to state 46
+    ACH     shift, and go to state 33
+
+    vetID         go to state 48
+    funID         go to state 49
+    CompostoDecl  go to state 50
+    Comando       go to state 107
+    ExpDecl       go to state 52
+    SelecaoDecl   go to state 53
+    IteracaoDecl  go to state 54
+    RetornoDecl   go to state 55
+    Exp           go to state 56
+    Var           go to state 57
+    SimplesExp    go to state 58
+    SomaExp       go to state 59
+    Termo         go to state 60
+    Fator         go to state 61
+    Ativacao      go to state 62
+
+
+State 107
+
+   33 SelecaoDecl: IF APA Exp FPA Comando ELSE Comando •
+
+    $default  reduce using rule 33 (SelecaoDecl)
