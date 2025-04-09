@@ -44,16 +44,32 @@ DeclLista:
             $$ = $1;
         }
         else $$ = $2;
-    } | /* epsilon */ { $$ = NULL; }
+    } | /* epsilon */ { $$ = NULL; } | DeclLista error PEV { 
+        yyerrok;  // limpa o estado de erro
+        $$ = NULL; // retorne NULL para que o nó não seja processado
+    }
 ;
 
 Decl:
+    VarDecl { $$ = $1; } 
+    | FunDecl { $$ = $1; }
+;
+
+VarDecl:
     TipoEspec varID PEV {
-        $$ = $2;
+        $$ = newExpNode(VarDeclK);
         $$->attr.name = $2->attr.name;
-        $$->lineno = lineno;
-        $2->child[0] = $1;
-    } | FunDecl { $$ = $1; }
+        $$->kind.exp = VarDeclK;
+        $$->child[0] = $1;
+        $$->lineno = $2->lineno;
+    } | TipoEspec vetID ACO tam FCO PEV {
+        $$ = newExpNode(VetorK);
+        $$->attr.name = $2->attr.name;
+        $$->kind.exp = VetorK;
+        $$->lineno = $2->lineno;
+        $$->child[0] = $1;
+        $$->child[1] = $4;
+    }
 ;
 
 varID:
@@ -61,7 +77,27 @@ varID:
         $$ = newExpNode(IdK);
         $$->attr.name = copyString(tokenID);
         $$->kind.exp = IdK;
-    } 
+        $$->lineno = lineno;
+    }
+;
+
+vetID:
+    ID {
+        $$ = newExpNode(IdK);
+        $$->attr.name = copyString(tokenID);
+        $$->kind.exp = IdK;
+        $$->lineno = lineno;
+    }
+;
+
+tam: 
+    NUM {
+        $$ = newExpNode(ConstK);
+        $$->attr.name = copyString(yytext);
+        $$->attr.val = atoi(yytext);
+        $$->type = INT_TYPE;
+    }
+;
 
 TipoEspec:
     INT {
@@ -87,7 +123,7 @@ FunDecl:
         $$->child[1] = $4;
         $$->child[2] = $6;
         $$->type = $1->type;
-    }
+    } 
 ;
 
 funID:
@@ -129,9 +165,9 @@ Param:
         $$->lineno = lineno;
         $$->child[0] = $1;
         $$->type = $1->type;
-    } | TipoEspec ID ACO FCO {
+    } | TipoEspec vetID ACO FCO {
         $$ = newExpNode(VetParamK);
-        $$->attr.name = copyString(yytext);
+        $$->attr.name = $2->attr.name;
         $$->kind.exp = VetParamK;
         $$->lineno = lineno;
         $$->child[0] = $1;
@@ -240,7 +276,7 @@ Var:
         $$->lineno = lineno;
         $$->attr.name = copyString(tokenID);
 
-    } | ID ACO Exp FCO {
+    } | vetID ACO Exp FCO {
         $$ = newExpNode(IdK);
         $$->attr.name = $1->attr.name;
         $$->lineno = lineno;
