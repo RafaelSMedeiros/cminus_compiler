@@ -44,10 +44,7 @@ DeclLista:
             $$ = $1;
         }
         else $$ = $2;
-    } | /* epsilon */ { $$ = NULL; } | DeclLista error PEV { 
-        yyerrok;  // limpa o estado de erro
-        $$ = NULL; // retorne NULL para que o nó não seja processado
-    }
+    } | /* epsilon */ { $$ = NULL; }
 ;
 
 Decl:
@@ -69,6 +66,10 @@ VarDecl:
         $$->lineno = $2->lineno;
         $$->child[0] = $1;
         $$->child[1] = $4;
+    }
+     | error PEV { 
+        yyerrok; 
+        $$ = NULL;
     }
 ;
 
@@ -123,6 +124,12 @@ FunDecl:
         $$->child[1] = $4;
         $$->child[2] = $6;
         $$->type = $1->type;
+    }  | error APA Params FPA CompostoDecl { 
+        yyerrok; 
+        $$ = NULL;
+    } | TipoEspec funID APA error FPA CompostoDecl { 
+        yyerrok; 
+        $$ = NULL;
     } 
 ;
 
@@ -155,6 +162,10 @@ ParamLista:
             $$ = $1;
         }
     } | Param { $$ = $1; }
+     | error VIR Param { 
+        yyerrok; 
+        $$ = NULL;
+    }
 ;
 
 Param:
@@ -217,6 +228,14 @@ Comando:
 ExpDecl:
     Exp PEV { $$ = $1; }
     | PEV
+    | error PEV { 
+        yyerrok; 
+        $$ = NULL;
+    } 
+    | Exp error { 
+        yyerrok; 
+        $$ = NULL;
+    } 
 ;
 
 SelecaoDecl:
@@ -247,6 +266,9 @@ IteracaoDecl:
         $$->lineno = lineno;
         $$->child[0] = $3;
         $$->child[1] = $5;
+    } | WHILE APA error FPA Comando {
+        yyerrok;
+        $$ = NULL;
     }
 ;
 
