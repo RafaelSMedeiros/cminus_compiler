@@ -218,7 +218,7 @@ void printTree(TreeNode *tree) // Função para imprimir a árvore sintática
             case VetParamK:
                 printf("Parametro: %s\n", tree->attr.name);
                 break;
-            case VetorK:
+            case VetDeclK:
                 printf("Vetor: %s\n", tree->attr.name);
                 break;
             default:

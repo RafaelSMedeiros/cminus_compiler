@@ -59,13 +59,15 @@ VarDecl:
         $$->kind.exp = VarDeclK;
         $$->child[0] = $1;
         $$->lineno = $2->lineno;
+        $$->type = $1->type;
     } | TipoEspec vetID ACO tam FCO PEV {
-        $$ = newExpNode(VetorK);
+        $$ = newExpNode(VetDeclK);
         $$->attr.name = $2->attr.name;
-        $$->kind.exp = VetorK;
+        $$->kind.exp = VetDeclK;
         $$->lineno = $2->lineno;
         $$->child[0] = $1;
         $$->child[1] = $4;
+        $$->type = $1->type;
     }
      | error PEV { 
         yyerrok; 
