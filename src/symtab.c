@@ -50,17 +50,32 @@ static void nullProc(TreeNode *t)
         return;
 }
 
-static void insertNode(TreeNode *t) // Função para inserir um nó na tabela de símbolos
+static void insertNode(TreeNode *t)
 {
-    switch (t->nodekind) // Verifica o tipo de nó
+    switch (t->nodekind)
     {
-    case StmtK: 
-        switch (t->kind.stmt) // Verifica o tipo de declaração
+    case StmtK:
+        switch (t->kind.stmt)
         {
-        case ReturnINT: // Se for um retorno de inteiro
+        case ReturnINT:
+            if (getFunType(escopo) == VOID_TYPE) {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. A função deve retornar um INT.\n", t->attr.name, t->lineno);
+            }
             break;
 
-        case ReturnVOID: // Se for um retorno de void
+        case ReturnVOID:
+            if (getFunType(escopo) == INT_TYPE) {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. A função não deve retornar um inteiro.\n", t->attr.name, t->lineno);
+            }
+            break;
+
+        case AssignK:
+            if (t->child[1] != NULL && t->child[1]->kind.exp == AtivK) {
+                if (getFunType(t->child[1]->attr.name) == VOID_TYPE) {
+                    printf("ERRO SEMÂNTICO: %s LINHA: %d. Atribuição inválida. A função '%s' não retorna valor.\n",
+                        t->attr.name, t->lineno, t->child[1]->attr.name);
+                }
+            }
             break;
 
         default:
@@ -69,46 +84,75 @@ static void insertNode(TreeNode *t) // Função para inserir um nó na tabela de
         break;
 
     case ExpK:
-        switch (t->kind.exp) // Verifica o tipo de expressão
+        switch (t->kind.exp)
         {
-        case IdK: // Se for uma variável
-            if (st_lookup(t->attr.name) == -1)
-            { // Se não estiver na tabela, insere
-                st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
-            }
-            else
-                /* already in table, so ignore location,
-                   add line number of use only */
-                st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
-            break;
-
-        case VarDeclK: // Se for uma declaração de variável
-            if (st_lookup(t->attr.name) == -1)
-            { // Se não estiver na tabela, insere
+        case IdK:
+            if (st_lookup(t->attr.name) == -1) {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. A variável '%s' não foi declarada.\n",
+                    t->attr.name, t->lineno, t->attr.name);
+            } else {
                 st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
             }
             break;
 
-        case VetorK: // Se for um vetor
-            st_insert(t->attr.name, t->lineno, t->type, VET, escopo);
+        case VarDeclK:
+            if (isFunctionName(t->attr.name)) {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. O nome '%s' já foi utilizado como função e não pode ser usado como variável.\n",
+                    t->attr.name, t->lineno, t->attr.name);
+            }
+
+            if (st_lookup_scope(t->attr.name, escopo) == 0) {
+                if (t->type == VOID_TYPE) {
+                    printf("ERRO SEMÂNTICO: %s LINHA: %d. A variável '%s' não pode ser do tipo VOID.\n",
+                        t->attr.name, t->lineno, t->attr.name);
+                }
+                st_insert(t->attr.name, t->lineno, t->type, VAR, escopo);
+            } else {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. Declaração inválida da variável '%s': já foi declarada no escopo '%s'.\n",
+                    t->attr.name, t->lineno, t->attr.name, escopo);
+            }
             break;
 
-        case FunDeclK: // Se for uma declaração de função
-            if (st_lookup(t->attr.name) == -1)
-            { // Se não estiver na tabela, insere
+        case VetDeclK:
+            if (isFunctionName(t->attr.name)) {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. O nome '%s' já foi utilizado como função e não pode ser usado como variável.\n",
+                    t->attr.name, t->lineno, t->attr.name);
+            }
+
+            if (st_lookup(t->attr.name) == -1) {
+                if (t->type == VOID_TYPE) {
+                    printf("ERRO SEMÂNTICO: %s LINHA: %d. O vetor '%s' não pode ser do tipo VOID.\n",
+                        t->attr.name, t->lineno, t->attr.name);
+                }
+                st_insert(t->attr.name, t->lineno, t->type, VET, escopo);
+            }
+            break;
+
+        case FunDeclK:
+            if (st_lookup(t->attr.name) == -1) {
                 st_insert(t->attr.name, t->lineno, t->type, FUN, escopo);
+            } else {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. A função '%s' já foi declarada.\n",
+                    t->attr.name, t->lineno, t->attr.name);
             }
             break;
 
-        case AtivK: // Se for uma chamada de função
-            st_insert(t->attr.name, t->lineno, t->type, CALL, escopo);
+        case AtivK:
+            if (st_lookup(t->attr.name) == -1 &&
+                strcmp(t->attr.name, "input") != 0 &&
+                strcmp(t->attr.name, "output") != 0) {
+                printf("ERRO SEMÂNTICO: %s LINHA: %d. A função '%s' não foi declarada.\n",
+                    t->attr.name, t->lineno, t->attr.name);
+            } else {
+                st_insert(t->attr.name, t->lineno, t->type, CALL, escopo);
+            }
             break;
 
-        case VarParamK: // Se for um parâmetro de variável
+        case VarParamK:
             st_insert(t->attr.name, t->lineno, t->type, PVAR, escopo);
             break;
 
-        case VetParamK: // Se for um parâmetro de vetor
+        case VetParamK:
             st_insert(t->attr.name, t->lineno, t->type, VET, escopo);
             break;
 
@@ -116,6 +160,7 @@ static void insertNode(TreeNode *t) // Função para inserir um nó na tabela de
             break;
         }
         break;
+
     default:
         break;
     }
@@ -124,6 +169,11 @@ static void insertNode(TreeNode *t) // Função para inserir um nó na tabela de
 void buildSymtab(TreeNode *syntaxTree) // Função para construir a tabela de símbolos
 {
     traverse(syntaxTree, insertNode, nullProc);
+
+    if (!main_declared()) {
+        printf("ERRO SEMANTICO: A função 'main' não foi declarada no escopo global.\n");
+    }
+
     printSymTab();
 }
 
@@ -195,6 +245,20 @@ int st_lookup(char *name) // Função para procurar um noh na tabela de símbolo
         return l->memloc;
 }
 
+int st_lookup_scope(char *name, char *escopoAtual) {
+    int h = hash(name);
+    BucketList l = hashTable[h];
+
+    while (l != NULL) {
+        if ((strcmp(name, l->name) == 0) && (strcmp(escopoAtual, l->escopo) == 0)) {
+            return 1; // Encontrado no mesmo escopo
+        }
+        l = l->next;
+    }
+    return 0; // Não encontrado no mesmo escopo
+}
+
+
 void printSymTab() { // Função para imprimir a tabela de símbolos
     int i;
     printf("%-14s %-10s %-8s %-14s %s\n", "Variable Name", "DataType", "IDType", "Scope", "Line Numbers");
@@ -237,3 +301,48 @@ void printSymTab() { // Função para imprimir a tabela de símbolos
     }
 }
 
+DataTypes getFunType(char *nome) {
+    int h = hash(nome);
+    BucketList l = hashTable[h];
+
+    while ((l != NULL)) {
+        if (strcmp(nome, l->name) == 0) {
+            if (l->idtype == FUN) {
+                break;
+            }
+        }
+        l = l->next;
+    }
+    if (l == NULL) {
+        return NULL_TYPE;
+    } else {
+        return l->type;
+    }
+}
+
+int main_declared() {
+    int h = hash("main");
+    BucketList l = hashTable[h];
+
+    while (l != NULL) {
+        if (strcmp(l->name, "main") == 0 && strcmp(l->escopo, "global") == 0 && l->idtype == FUN) {
+            return 1; // Função main encontrada
+        }
+        l = l->next;
+    }
+
+    return 0; // Não encontrada
+}
+
+int isFunctionName(char *name) {
+    int h = hash(name);
+    BucketList l = hashTable[h];
+
+    while (l != NULL) {
+        if (strcmp(name, l->name) == 0 && l->idtype == FUN) {
+            return 1;
+        }
+        l = l->next;
+    }
+    return 0;
+}
