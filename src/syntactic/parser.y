@@ -7,6 +7,7 @@
     #include "globals.h"
     #include "util.h"
     #include "symtab.h"
+    #include "cgen.h"
 
     #define MAXTOKENLEN 40
     extern char tokenID[MAXTOKENLEN+1];  // Declaração externa de tokenID
@@ -149,7 +150,7 @@ Params:
     | VOID {
         $$ = newExpNode(TypeK);
         $$->attr.name = copyString(tokenID);
-        $$->kind.exp = TypeK;
+        $$->child[0] = NULL;
         $$->lineno = lineno;
     }
 ;
@@ -463,6 +464,9 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Erro na análise sintática.\n");
     }
+
+    printf("Gerando código intermediário...\n");
+    codeGen(arvoreSintatica);
 
     return 0;
 }
