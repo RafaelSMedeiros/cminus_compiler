@@ -20,7 +20,7 @@ const char *opKindStr[] = {
     "FUN", "END", "ALLOC", "GOTO", "IF", "CALL", "RETURN", "PARAM", "LOAD",
     "STORE", "ADD", "SUB", "MUL", "DIV", "HALT", "ASSIGN", "RET",
     "ARG", "LABEL", "PRINT", "READ", "AND", "OR", "NOT",
-    "BLT", "BGT", "EQUAL", "BNQ"};
+    "BLT", "BGT", "BEQ", "BNQ"};
 
 void insertQuad(Quad quad)
 {
@@ -59,6 +59,8 @@ char *newTemp()
     char *regTemp = (char *)malloc(10 * sizeof(char));
     sprintf(regTemp, "t%d", tempCount);
     tempCount++;
+    if (tempCount > 15)
+        tempCount = 0;
     return regTemp;
 }
 
@@ -95,7 +97,6 @@ static void genStmt(TreeNode *t)
         createQuad(opIF, addr1, addr2, addr3);
 
         cGen(p2); // bloco if verdadeiro
-
         if (p3 != NULL)
         { // bloco else
             trueLabel = newLabel();
@@ -129,6 +130,7 @@ static void genStmt(TreeNode *t)
             createQuad(opGOTO, addr1, addr2, addr3);
             createQuad(opLABEL, addr1, addr2, addr3);
         }
+
 
         break;
     case WhileK:
@@ -182,7 +184,7 @@ static void genStmt(TreeNode *t)
 
             Address baseAddr;
             baseAddr.type = String;
-            baseAddr.var.name = strdup(p1->attr.name); // nome do vetor
+            baseAddr.var.name = strdup(p1->attr.name);
 
             char *temp = newTemp();
             Address tempAddr;
@@ -450,7 +452,7 @@ static void genExp(TreeNode *t)
 
         break;
     case FunDeclK:
-
+        tempCount = 0;
         strcpy(varEscopo, t->attr.name);
 
         addr1.type = String;
@@ -544,26 +546,34 @@ static void cGen(TreeNode *t)
 
 void printCodeGen()
 {
+    FILE *file = fopen("codigo_intermediario.txt", "w");
+    if (!file)
+    {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
     QuadList *q = head;
     if (q == NULL)
     {
-        printf("Nenhum código intermediário gerado.\n");
+        fprintf(file, "Nenhum código intermediário gerado.\n");
+        fclose(file);
         return;
     }
 
     do
     {
-        printf("(%s,", opKindStr[q->quad.op]);
+        fprintf(file, "(%s,", opKindStr[q->quad.op]);
         switch (q->quad.addr1.type)
         {
         case Empty:
-            printf("___,");
+            fprintf(file, "___,");
             break;
         case constINT:
-            printf("%d,", q->quad.addr1.var.val);
+            fprintf(file, "%d,", q->quad.addr1.var.val);
             break;
         case String:
-            printf("%s,", q->quad.addr1.var.name);
+            fprintf(file, "%s,", q->quad.addr1.var.name);
             break;
         default:
             break;
@@ -571,13 +581,13 @@ void printCodeGen()
         switch (q->quad.addr2.type)
         {
         case Empty:
-            printf("___,");
+            fprintf(file, "___,");
             break;
         case constINT:
-            printf("%d,", q->quad.addr2.var.val);
+            fprintf(file, "%d,", q->quad.addr2.var.val);
             break;
         case String:
-            printf("%s,", q->quad.addr2.var.name);
+            fprintf(file, "%s,", q->quad.addr2.var.name);
             break;
         default:
             break;
@@ -585,21 +595,22 @@ void printCodeGen()
         switch (q->quad.addr3.type)
         {
         case Empty:
-            printf("___");
+            fprintf(file, "___");
             break;
         case constINT:
-            printf("%d", q->quad.addr3.var.val);
+            fprintf(file, "%d", q->quad.addr3.var.val);
             break;
         case String:
-            printf("%s", q->quad.addr3.var.name);
+            fprintf(file, "%s", q->quad.addr3.var.name);
             break;
         default:
             break;
         }
-        printf(")\n");
+        fprintf(file, ")\n");
         q = q->next;
     } while (q != NULL);
     printf("Codigo intermediario gerado...\n");
+    fclose(file);
 }
 
 void codeGen(TreeNode *tree)
